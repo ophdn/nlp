@@ -1,0 +1,104 @@
+📂 Lade Daten ...
+  ✓ Geladen: 15,853 Zeilen  |  Spalten erkannt: text='description', label='dbo'
+  ✓ Geladen: 999 Zeilen  |  Spalten erkannt: text='description', label='dbo'
+
+──────────────────────────────────────────────────
+  TRAINING: 15,853 Samples
+──────────────────────────────────────────────────
+
+  Klassenverteilung:
+    nothing              13818  ( 87.2%)  ███████████████████████████████████████████
+    criticism             1839  ( 11.6%)  █████
+    agitation              143  (  0.9%)  
+    subversive              53  (  0.3%)  
+
+  Imbalance-Ratio (max/min):  260.7x  ⚠️  KRITISCH – class weighting dringend erforderlich
+
+  Textlänge (Zeichen):  min=1  median=88  max=7624  mean=152
+  Wortanzahl:           min=1  median=13  max=1091  mean=23
+
+  ⚠️  42 Tweets überschreiten ~512 Tokens (BERT-Limit)
+
+──────────────────────────────────────────────────
+  TEST: 999 Samples
+──────────────────────────────────────────────────
+
+  Klassenverteilung:
+    nothing                860  ( 86.1%)  ███████████████████████████████████████████
+    criticism              112  ( 11.2%)  █████
+    agitation               22  (  2.2%)  █
+    subversive               5  (  0.5%)  
+
+  Imbalance-Ratio (max/min):  172.0x  ⚠️  KRITISCH – class weighting dringend erforderlich
+
+  Textlänge (Zeichen):  min=2  median=82  max=1573  mean=139
+  Wortanzahl:           min=1  median=12  max=245  mean=21
+
+  ✓ Alle Tweets innerhalb des BERT-Token-Limits (~512)
+
+  Social-Media-Features (% der Tweets pro Klasse):
+            has_emoji  has_hashtag  has_mention  has_url  has_caps  has_punct_rep
+label                                                                            
+agitation         7.0         19.6          7.7      8.4      28.7           16.8
+criticism         0.3          2.0          3.9      5.6      23.5           16.6
+nothing           0.2          1.3          2.9      8.9      11.8           15.8
+subversive        5.7         20.8         18.9     15.1      26.4           28.3
+
+  Qualitätsprüfung:
+    Leere Texte:      0
+    Exakte Duplikate (Text+Label): 0
+    ✓ Keine widersprüchlichen Annotationen
+C:\Users\sophi\OneDrive\Documents\uni\Misc\nlp\Sophie\data_exploration\analysis.py:201: FutureWarning: 
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `x` variable to `hue` and set `legend=False` for the same effect.
+
+  sns.boxplot(data=train, x="label", y="char_len", order=class_order,
+
+  📊 Plot gespeichert: analysis_output\subtask3_data_analysis.png
+
+============================================================
+  BEISPIEL-TWEETS PRO KLASSE (je 3)
+============================================================
+
+  [nothing]  (n=13,818)
+    › Pegida ist Schuld! ?? wie immer
+    › Wer bei PEGIDA war und auch in einer Gewerkschaft ist, kann ja mal dort hin gehen und seinen Gewerkschaftsleuten die Mei
+    › Für die schreckliche Vergangenheit unseres Landes sind die Nachgeborenen nicht verantwortlich, für den Umgang mit ihr ab
+
+  [criticism]  (n=1,839)
+    › Da komnen täglich mehr rein als abgeschoben werden
+    › In Östereich wird Demokratie noch groß geschrieben !!!
+    › Ich erzähle Euch mal eine Geschichte von ein paar Freunde, die Zecken und Punks waren.... Inbrünstig "Pro-Asyl" vertrate
+
+  [agitation]  (n=143)
+    › @focusonline Die Grünen-die größten Betrüger unter der Sonne Gottes! Abschaum Nazis Kommunisten Betrüger Klima vergifter
+    › Wenn ihr denkt, wir haben hier ein paar dumme Antifaschisten mit kaputtgekifften Hirnen als Gegner, dann unterschätzt Ih
+    › Wissen wir doch, aber die Propagandapresse der BRiD muss alles auf PEGIDA beziehen, da sie zur Zeit der größte Feind für
+
+  [subversive]  (n=53)
+    › Wake up, dear Germany, and DETHRONE MERKEL!!!
+    › Generalstreik - alle legen die Arbeit nieder, hier liegt die Macht - da hier das Kapital liegt was die Regierung für ihr
+    › hier wird sich erst etwas ändern, wen wir das politische geschmeiß zum teufel jagen und das system kippen.die politik is
+
+============================================================
+  ZUSAMMENFASSUNG & EMPFEHLUNGEN FÜR MODELLIERUNG
+============================================================
+
+  Anzahl Klassen:          4
+  Trainingssamples:        15,853
+  Imbalance-Ratio:         260.7x
+  Median Textlänge:        88 Zeichen
+  Emoji-Anteil:            0.3%
+
+  Modellierungs-Empfehlungen:
+  ✦ Class-weighted Cross-Entropy verwenden (kritische Imbalance)
+  ✦ Oversampling der Minority-Klassen erwägen
+  ✦ Kurze Texte (Ø 152 Zeichen) → max_length=128 ausreichend, spart Speicher
+
+  Nächste Schritte (Phase 1 Todos 3–5):
+  → Klassenimbalance quantifizieren (erledigt ↑)
+  → Baseline-Skript der Organizer laufen lassen
+  → Lokales Eval-Framework (Macro-F1, Confusion Matrix) aufsetzen
+  → Cross-Validation-Setup implementieren
+
+  💾 Klassenverteilung gespeichert: analysis_output\class_distribution.csv
