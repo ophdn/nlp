@@ -16,11 +16,13 @@ Separator wird automatisch erkannt (Komma oder Tab).
 import argparse
 import re
 import sys
+
+sys.stdout.reconfigure(encoding="utf-8")
+sys.stderr.reconfigure(encoding="utf-8")
 from collections import Counter
 from pathlib import Path
 
 import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -170,73 +172,91 @@ else:
 
 
 # ──────────────────────────────────────────────
-# 6. Visualisierungen
+# 6. Visualisierungen (einzelne Dateien)
 # ──────────────────────────────────────────────
 sns.set_theme(style="whitegrid", palette="muted")
-fig = plt.figure(figsize=(18, 14))
-gs  = gridspec.GridSpec(3, 3, figure=fig, hspace=0.45, wspace=0.35)
-fig.suptitle("GermEval 2026 – Subtask 3: Trainingsdaten-Analyse", fontsize=15, fontweight="bold")
 
 label_counts = train["label"].value_counts()
 colors = sns.color_palette("Set2", len(label_counts))
+class_order = label_counts.index.astype(str).tolist()
 
-# Plot 1: Klassenverteilung (Balken)
-ax1 = fig.add_subplot(gs[0, :2])
-bars = ax1.barh(label_counts.index.astype(str), label_counts.values, color=colors)
-ax1.set_xlabel("Anzahl Samples")
-ax1.set_title("Klassenverteilung")
+saved_plots = []
+
+# Plot 1: Klassenverteilung (Balken, x auf 2000 begrenzt)
+XMAX = 2000
+fig, ax = plt.subplots(figsize=(9, 5))
+bars = ax.barh(label_counts.index.astype(str), label_counts.values, color=colors)
+ax.set_xlim(0, XMAX)
+ax.set_xlabel("Anzahl Samples")
+ax.set_title("Klassenverteilung  (x-Achse bei 2 000 abgeschnitten)")
 for bar, val in zip(bars, label_counts.values):
-    ax1.text(bar.get_width() + label_counts.max() * 0.01, bar.get_y() + bar.get_height()/2,
-             f"{val:,}", va="center", fontsize=9)
+    x = min(bar.get_width(), XMAX) + XMAX * 0.01
+    label = f"{val:,}" + (" >>>" if val > XMAX else "")
+    ax.text(x, bar.get_y() + bar.get_height() / 2,
+            label, va="center", fontsize=9)
+p = OUT / "plot1_klassenverteilung.png"
+plt.savefig(p, dpi=150, bbox_inches="tight"); plt.close(); saved_plots.append(p)
 
 # Plot 2: Pie-Chart
-ax2 = fig.add_subplot(gs[0, 2])
-ax2.pie(label_counts.values, labels=label_counts.index.astype(str),
-        autopct="%1.1f%%", colors=colors, startangle=90, textprops={"fontsize": 8})
-ax2.set_title("Anteil (%)")
+fig, ax = plt.subplots(figsize=(7, 7))
+wedges, texts = ax.pie(label_counts.values, colors=colors, startangle=90,
+                       pctdistance=0.75, labeldistance=1.15)
+ax.legend(wedges, [f"{lbl}  ({v/label_counts.sum()*100:.1f}%)"
+                   for lbl, v in zip(label_counts.index.astype(str), label_counts.values)],
+          loc="lower center", bbox_to_anchor=(0.5, -0.12), ncol=2, fontsize=9)
+ax.set_title("Klassenanteile (%)")
+p = OUT / "plot2_pie_chart.png"
+plt.savefig(p, dpi=150, bbox_inches="tight"); plt.close(); saved_plots.append(p)
 
 # Plot 3: Textlänge nach Klasse (Boxplot)
-ax3 = fig.add_subplot(gs[1, :2])
-class_order = label_counts.index.astype(str).tolist()
+fig, ax = plt.subplots(figsize=(9, 5))
 sns.boxplot(data=train, x="label", y="char_len", order=class_order,
-            palette="Set2", ax=ax3, showfliers=False)
-ax3.set_xlabel("Label")
-ax3.set_ylabel("Zeichen")
-ax3.set_title("Textlänge pro Klasse (Zeichen, ohne Ausreißer)")
-ax3.tick_params(axis="x", rotation=20)
+            hue="label", palette="Set2", legend=False, ax=ax, showfliers=False)
+ax.set_xlabel("Label")
+ax.set_ylabel("Zeichen")
+ax.set_title("Textlänge pro Klasse (Zeichen, ohne Ausreißer)")
+ax.tick_params(axis="x", rotation=20)
+p = OUT / "plot3_textlaenge_boxplot.png"
+plt.savefig(p, dpi=150, bbox_inches="tight"); plt.close(); saved_plots.append(p)
 
 # Plot 4: Textlängen-Histogramm gesamt
-ax4 = fig.add_subplot(gs[1, 2])
-ax4.hist(train["char_len"], bins=40, color="#5B9BD5", edgecolor="white")
-ax4.axvline(train["char_len"].median(), color="red", linestyle="--", label=f"Median={train['char_len'].median():.0f}")
-ax4.set_xlabel("Zeichen")
-ax4.set_ylabel("Häufigkeit")
-ax4.set_title("Textlängen-Verteilung")
-ax4.legend(fontsize=8)
+fig, ax = plt.subplots(figsize=(7, 5))
+ax.hist(train["char_len"], bins=40, color="#5B9BD5", edgecolor="white")
+ax.axvline(train["char_len"].median(), color="red", linestyle="--",
+           label=f"Median={train['char_len'].median():.0f}")
+ax.set_xlabel("Zeichen")
+ax.set_ylabel("Häufigkeit")
+ax.set_title("Textlängen-Verteilung")
+ax.legend(fontsize=9)
+p = OUT / "plot4_textlaenge_histogramm.png"
+plt.savefig(p, dpi=150, bbox_inches="tight"); plt.close(); saved_plots.append(p)
 
 # Plot 5: Social-Media-Features Heatmap
-ax5 = fig.add_subplot(gs[2, :2])
+fig, ax = plt.subplots(figsize=(10, 5))
 feat_df_plot = train.groupby("label")[features].mean().mul(100)
 feat_df_plot.columns = [f.replace("has_", "") for f in features]
 sns.heatmap(feat_df_plot, annot=True, fmt=".0f", cmap="YlOrRd",
-            ax=ax5, cbar_kws={"label": "%"}, linewidths=0.5)
-ax5.set_title("Social-Media-Features pro Klasse (%)")
-ax5.set_ylabel("")
+            ax=ax, cbar_kws={"label": "%"}, linewidths=0.5)
+ax.set_title("Social-Media-Features pro Klasse (%)")
+ax.set_ylabel("")
+p = OUT / "plot5_social_media_features.png"
+plt.savefig(p, dpi=150, bbox_inches="tight"); plt.close(); saved_plots.append(p)
 
 # Plot 6: Wortanzahl-Verteilung pro Klasse
-ax6 = fig.add_subplot(gs[2, 2])
+fig, ax = plt.subplots(figsize=(7, 5))
 for i, (label, group) in enumerate(train.groupby("label")):
-    ax6.hist(group["word_len"], bins=20, alpha=0.5,
-             label=str(label), color=colors[i % len(colors)])
-ax6.set_xlabel("Wörter")
-ax6.set_ylabel("Häufigkeit")
-ax6.set_title("Wortanzahl pro Klasse")
-ax6.legend(fontsize=7)
+    ax.hist(group["word_len"], bins=20, alpha=0.5,
+            label=str(label), color=colors[i % len(colors)])
+ax.set_xlabel("Wörter")
+ax.set_ylabel("Häufigkeit")
+ax.set_title("Wortanzahl pro Klasse")
+ax.legend(fontsize=8)
+p = OUT / "plot6_wortanzahl.png"
+plt.savefig(p, dpi=150, bbox_inches="tight"); plt.close(); saved_plots.append(p)
 
-out_plot = OUT / "subtask3_data_analysis.png"
-plt.savefig(out_plot, dpi=150, bbox_inches="tight")
-print(f"\n  📊 Plot gespeichert: {out_plot}")
-plt.close()
+print("\n  📊 Plots gespeichert:")
+for p in saved_plots:
+    print(f"    {p}")
 
 
 # ──────────────────────────────────────────────

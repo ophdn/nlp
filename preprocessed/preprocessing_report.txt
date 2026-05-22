@@ -1,0 +1,27 @@
+GermEval 2026 – Subtask 2: Preprocessing Report
+==================================================
+
+Varianten:
+  raw     → kein Preprocessing (Baseline-Paper-Standard)
+  minimal → URLs→[URL], @Mentions→[USER], Whitespace normalisiert
+
+Dateien:
+
+  [train]
+    raw        → ..\data\preprocessed\train_raw.csv
+    minimal    → ..\data\preprocessed\train_minimal.csv
+               URLs ersetzt: 1347  |  Mentions ersetzt: 494  |  Ø Längendelta: -7.4 Zeichen
+
+  [test]
+    raw        → ..\data\preprocessed\test_raw.csv
+    minimal    → ..\data\preprocessed\test_minimal.csv
+               URLs ersetzt: 71  |  Mentions ersetzt: 32  |  Ø Längendelta: -5.7 Zeichen
+
+Verwendung in nachfolgenden Scripts:
+  from pathlib import Path
+  import pandas as pd
+
+  DATA = Path('..\data\preprocessed')
+  train = pd.read_csv(DATA / 'train_minimal.csv')  # empfohlen
+  # oder:
+  train = pd.read_csv(DATA / 'train_raw.csv')      # zero preprocessing
