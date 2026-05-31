@@ -65,7 +65,7 @@ parser.add_argument("--max_grad_norm",type=float, default=1.0)
 parser.add_argument("--warmup_steps", type=int,   default=500)
 parser.add_argument("--max_epochs",   type=int,   default=10)
 parser.add_argument("--eval_every",   type=int,   default=40)
-parser.add_argument("--patience",     type=int,   default=87)
+parser.add_argument("--patience",     type=int,   default=50)
 parser.add_argument("--val_size",     type=float, default=0.1)
 args = parser.parse_args()
 
@@ -213,7 +213,7 @@ def save_checkpoint(step, epoch, best_f1, no_improve, log_rows):
 
 def load_checkpoint():
     """Lädt Checkpoint und gibt Trainingsstate zurück."""
-    ckpt = torch.load(CKPT_PATH, map_location=DEVICE)
+    ckpt = torch.load(CKPT_PATH, map_location=DEVICE, wheight_only=False)
     # Float16 → float32 für Training
     state = {k: v.float() for k, v in ckpt["model_state"].items()}
     model.load_state_dict(state)
