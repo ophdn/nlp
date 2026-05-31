@@ -213,7 +213,7 @@ def save_checkpoint(step, epoch, best_f1, no_improve, log_rows):
 
 def load_checkpoint():
     """Lädt Checkpoint und gibt Trainingsstate zurück."""
-    ckpt = torch.load(CKPT_PATH, map_location=DEVICE, wheight_only=False)
+    ckpt = torch.load(CKPT_PATH, map_location=DEVICE, weights_only=False)
     # Float16 → float32 für Training
     state = {k: v.float() for k, v in ckpt["model_state"].items()}
     model.load_state_dict(state)
