@@ -96,10 +96,10 @@ print(f"  Ausgabe:  {OUT.resolve()}\n")
 # ──────────────────────────────────────────────
 # 3. Daten laden & splitten
 # ──────────────────────────────────────────────
-train_path = Path(args.data_dir) / f"train_{args.variant}.csv"
+train_path = Path(args.data_dir) / f"dbo_train_26.csv"
 assert train_path.exists(), f"Nicht gefunden: {train_path}"
 
-df = pd.read_csv(train_path)
+df = pd.read_csv(train_path, sep=';')
 df_train, df_val = train_test_split(
     df, test_size=args.val_size, stratify=df["label"], random_state=args.seed
 )

@@ -1,0 +1,22 @@
+# Virtuelle Umgebungen (sehr wichtig, da riesig)
+venv
+.venv/
+env/
+
+# Python-Cache (verlangsamt Git nur)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Große Datensätze und NLP-Modelle (gehören nicht ins Git)
+*.csv
+*.tsv
+models/
+checkpoint-*/
+
+# VS Code Einstellungen
+.vscode/
+
+# Betriebssystem-Dateien
+.DS_Store
+Thumbs.db
