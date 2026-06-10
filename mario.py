@@ -42,7 +42,11 @@ from tqdm import tqdm
 
 from transformers import (
     AutoTokenizer,
+    AutoConfig,
+    BertConfig,
+    BertTokenizerFast,
     AutoModelForSequenceClassification,
+    BertForSequenceClassification,
     get_linear_schedule_with_warmup,
 )
 
@@ -62,9 +66,10 @@ np.random.seed(SEED)
 random.seed(SEED)
 
 # ── Fixed config ───────────────────────────────────────────────────────────────
-MODEL_NAME = "chrisrtt/gbert-multi-class-german-hate"
-DATA_PATH  = "data/processed/dbo_train_26.csv"
-SAVE_PATH  = "data/gbert_dbo_finetuned.pt"
+MODEL_NAME = "deepset/gbert-large"
+DATA_PATH  = "data/processed/dbo_train_26_synth.csv"
+SAVE_PATH  = "data/gbert_large_dbo_finetuned.pt"
+CKPT_DIR   = Path("data/checkpoints")
 MAX_LEN    = 256
 
 DEVICE = torch.device("mps" if torch.backends.mps.is_available() else
@@ -78,7 +83,7 @@ NUM_CLASSES = len(LABEL2ID)
 DEFAULT_CONFIG = {
     "lr":           2e-5,
     "focal_gamma":  2.0,
-    "batch_size":   32,
+    "batch_size":   16,
     "weight_decay": 0.01,
     "warmup_frac":  0.06,
 }
@@ -87,7 +92,7 @@ DEFAULT_CONFIG = {
 SEARCH_SPACE = {
     "lr":           ("log_uniform", 5e-6, 5e-5),
     "focal_gamma":  ("uniform",     1.0,  3.0),
-    "batch_size":   ("choice",      [16, 32, 64]),
+    "batch_size":   ("choice",      [8, 16, 32]),
     "weight_decay": ("log_uniform", 1e-3, 0.1),
     "warmup_frac":  ("uniform",     0.0,  0.12),
 }
@@ -114,7 +119,9 @@ class FocalLoss(nn.Module):
 
 # ── Data ───────────────────────────────────────────────────────────────────────
 def load_data(path):
-    texts, labels = [], []
+    """Returns texts, labels, is_synthetic — rows whose id starts with
+    'synth_' are synthetic data and must stay in the training split only."""
+    texts, labels, is_synth = [], [], []
     with open(path, encoding="utf-8") as f:
         for row in csv.DictReader(f, delimiter=";"):
             label = row["label"].strip().lower()
@@ -122,7 +129,8 @@ def load_data(path):
                 label = "nothing"
             texts.append(row["text"].strip())
             labels.append(LABEL2ID[label])
-    return texts, labels
+            is_synth.append(row["id"].strip().startswith("synth_"))
+    return texts, labels, is_synth
 
 
 class DboDataset(Dataset):
@@ -172,13 +180,20 @@ def make_loaders(train_ds, val_ds, test_ds, batch_size, class_weights_cpu):
 
 
 def build_model_and_optimizer(cfg):
-    model = AutoModelForSequenceClassification.from_pretrained(
-        MODEL_NAME,
-        num_labels=NUM_CLASSES,
-        id2label=ID2LABEL,
-        label2id=LABEL2ID,
-        ignore_mismatched_sizes=True,
-    ).to(DEVICE)
+    try:
+        config = AutoConfig.from_pretrained(
+            MODEL_NAME, num_labels=NUM_CLASSES, id2label=ID2LABEL, label2id=LABEL2ID)
+        model = AutoModelForSequenceClassification.from_pretrained(
+            MODEL_NAME, config=config, ignore_mismatched_sizes=True,
+        ).to(DEVICE)
+    except ValueError:
+        # Some checkpoints (e.g. deepset/gbert-large) have a config.json without
+        # `model_type`, which AutoConfig in transformers 5.x can't resolve.
+        config = BertConfig.from_pretrained(
+            MODEL_NAME, num_labels=NUM_CLASSES, id2label=ID2LABEL, label2id=LABEL2ID)
+        model = BertForSequenceClassification.from_pretrained(
+            MODEL_NAME, config=config, ignore_mismatched_sizes=True,
+        ).to(DEVICE)
 
     no_decay       = {"bias", "LayerNorm.weight"}
     classifier_kws = {"classifier", "pooler"}
@@ -292,6 +307,23 @@ def run(cfg, train_ds, val_ds, test_ds, class_weights, max_epochs, patience,
             print(f"  {epoch:>3}  {tr_loss:>8.4f}  {tr_acc:>7.4f}"
                   f"  {vl_loss:>8.4f}  {vl_acc:>7.4f}  {vl_f1:>9.4f}"
                   f"  {ep_secs:>5.1f}s{marker}")
+
+            # Rolling per-epoch checkpoint — overwritten every epoch so a
+            # crash never loses more than one epoch of progress.
+            CKPT_DIR.mkdir(parents=True, exist_ok=True)
+            torch.save({
+                "epoch":          epoch,
+                "model_state":    model.state_dict(),
+                "optimizer_state": optimizer.state_dict(),
+                "scheduler_state": scheduler.state_dict(),
+                "best_f1":        best_f1,
+                "no_improve":     no_improve,
+                "config":         cfg,
+                "label2id":       LABEL2ID,
+                "id2label":       ID2LABEL,
+                "model_name":     MODEL_NAME,
+                "max_len":        MAX_LEN,
+            }, CKPT_DIR / "checkpoint_latest.pt")
         else:
             print(f"    ep {epoch}/{max_epochs}  val_f1={vl_f1:.4f}  "
                   f"best={best_f1:.4f}  {ep_secs:.0f}s{marker}", flush=True)
@@ -317,21 +349,39 @@ def main():
         print(f"  Mode: single run  (up to {FULL_EPOCHS} epochs)")
     print(f"{'='*70}\n")
 
-    # 1. Load & split data
+    # 1. Load & split data — synthetic rows are excluded from the stratified
+    #    split and added to the training set only (see load_data).
     print("⏳  Loading data …")
-    texts, labels = load_data(DATA_PATH)
+    texts, labels, is_synth = load_data(DATA_PATH)
     dist = {ID2LABEL[k]: v for k, v in sorted(Counter(labels).items())}
-    print(f"    {len(texts):,} rows | {dist}\n")
+    print(f"    {len(texts):,} rows | {dist}")
+
+    real_texts  = [t for t, s in zip(texts, is_synth) if not s]
+    real_labels = [l for l, s in zip(labels, is_synth) if not s]
+    synth_texts  = [t for t, s in zip(texts, is_synth) if s]
+    synth_labels = [l for l, s in zip(labels, is_synth) if s]
 
     X_tr, X_te, y_tr, y_te = train_test_split(
-        texts, labels, test_size=0.2, random_state=SEED, stratify=labels)
+        real_texts, real_labels, test_size=0.2, random_state=SEED, stratify=real_labels)
     X_tr, X_vl, y_tr, y_vl = train_test_split(
         X_tr, y_tr, test_size=0.1, random_state=SEED, stratify=y_tr)
-    print(f"    train: {len(y_tr):,}  |  val: {len(y_vl):,}  |  test: {len(y_te):,}\n")
+    print(f"    train: {len(y_tr):,}  |  val: {len(y_vl):,}  |  test: {len(y_te):,}")
+
+    if synth_texts:
+        X_tr = X_tr + synth_texts
+        y_tr = y_tr + synth_labels
+        sdist = {ID2LABEL[k]: v for k, v in sorted(Counter(synth_labels).items())}
+        print(f"    + synthetic: {len(synth_labels):,} rows {sdist} → train now: {len(y_tr):,}")
+    print()
 
     # 2. Tokenise once — reused across all trials
     print("⏳  Loading tokenizer & tokenising …")
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+    try:
+        tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+    except ValueError:
+        # Some models (e.g. deepset/gbert-large) ship only vocab.txt without
+        # tokenizer.json, which AutoTokenizer in transformers 5.x can't auto-convert.
+        tokenizer = BertTokenizerFast.from_pretrained(MODEL_NAME)
     t0 = time.time()
     train_ds = DboDataset(X_tr, y_tr, tokenizer)
     val_ds   = DboDataset(X_vl, y_vl, tokenizer)
