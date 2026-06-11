@@ -20,3 +20,4 @@ checkpoint-*/
 # Betriebssystem-Dateien
 .DS_Store
 Thumbs.db
+*.pt
