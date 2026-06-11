@@ -1,6 +1,6 @@
 GermEval 2026 - Subtask 2: Ensemble Training Report
 ─────────────────────────────────────────────────────────────────
-Timestamp:       2026-06-11 14:58
+Timestamp:       2026-06-11 18:23
 Augmentierung:   none
 Modelle:         3 (3 trainiert)
 Train:           14,267 (Basis: 14,267 + Aug: 0)

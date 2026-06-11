@@ -1,8 +1,8 @@
 {
   "train_file": "../data/preprocessed_data/train_minimal.csv",
   "test_file": "../data/preprocessed_data/test_minimal.csv",
-  "paraphrase_file": "../data/synthetic_data/paraphrased.csv",
-  "generated_file": "../data/synthetic_data/generated.csv",
+  "paraphrase_file": "/u/halle/ophe/home_at/Desktop/nlp/data/synthethic_data/paraphrased.csv",
+  "generated_file": "/u/halle/ophe/home_at/Desktop/nlp/data/synthethic_data/generated.csv",
   "augmentation": "none",
   "fourth_model_path": null,
   "fourth_model_base": "FacebookAI/xlm-roberta-large",
@@ -76,5 +76,5 @@
     }
   },
   "device": "cuda",
-  "timestamp": "2026-06-11T14:58:23.466398"
+  "timestamp": "2026-06-11T18:23:52.101463"
 }
