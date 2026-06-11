@@ -1,0 +1,51 @@
+{
+  "_comment": "GermEval 2026 – Grid-Search Config: 4 Augmentation-Varianten, alle 5 Modelle",
+  "_generated": "2026-06-11",
+
+  "base_script":  "germeval2026_ensemble_train.py",
+  "base_out_dir": "model_dataset_gridsearch",
+  "results_csv":  "results.csv",
+
+  "global_args": {
+    "train_file":      "../data/preprocessed_data/train_minimal.csv",
+    "test_file":       "../data/preprocessed_data/test_minimal.csv",
+    "paraphrase_file": "../data/synthetic_data/paraphrased.csv",
+    "generated_file":  "../data/synthetic_data/generated.csv",
+    "models":          ["gbert", "xlmr", "deberta", "mdeberta", "gelectra"],
+    "seed":            42,
+    "max_length":      128,
+    "batch_size":      16,
+    "lr":              2e-5,
+    "weight_decay":    0.01,
+    "max_grad_norm":   1.0,
+    "warmup_steps":    500,
+    "max_epochs":      10,
+    "eval_every":      40,
+    "patience":        50,
+    "val_size":        0.1,
+    "dropout":         0.1
+  },
+
+  "runs": [
+    {
+      "name":         "all5_aug-none",
+      "notes":        "5-Modell Ensemble, keine Augmentierung",
+      "augmentation": "none"
+    },
+    {
+      "name":         "all5_aug-paraphrase",
+      "notes":        "5-Modell Ensemble + LLM-Paraphrasen",
+      "augmentation": "paraphrase"
+    },
+    {
+      "name":         "all5_aug-generated",
+      "notes":        "5-Modell Ensemble + synthetische Daten",
+      "augmentation": "generated"
+    },
+    {
+      "name":         "all5_aug-both",
+      "notes":        "5-Modell Ensemble + Paraphrasen + Generierte Daten",
+      "augmentation": "both"
+    }
+  ]
+}
