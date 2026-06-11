@@ -1,0 +1,29 @@
+
+=================================================================
+  GermEval 2026 - Subtask 2  |  Ensemble Training
+=================================================================
+  Device:        cuda
+  Augmentierung: both
+  4. Modell:     keins
+  Ausgabe:       /u/halle/ophe/home_at/Desktop/nlp/Sophie/model_dataset_gridsearch/all5_aug-both
+
+  Lade Daten ...
+  WARNING  Datei nicht gefunden (wird uebersprungen): preprocessed/train_minimal.csv
+  WARNING  Datei nicht gefunden (wird uebersprungen): preprocessed/test_minimal.csv
+  WARNING  Datei nicht gefunden (wird uebersprungen): data/aug-llm-paraphrasing.csv
+  WARNING  Datei nicht gefunden (wird uebersprungen): preprocessed/synthetic_data.csv
+
+  Trainingsdaten nach Augmentierung:
+Traceback (most recent call last):
+  File "/u/halle/ophe/home_at/Desktop/nlp/Sophie/germeval2026_ensemble_train.py", line 241, in <module>
+    df_train_base, df_val = train_test_split(
+                            ^^^^^^^^^^^^^^^^^
+  File "/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/sklearn/utils/_param_validation.py", line 218, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/sklearn/model_selection/_split.py", line 2946, in train_test_split
+    n_train, n_test = _validate_shuffle_split(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/sklearn/model_selection/_split.py", line 2511, in _validate_shuffle_split
+    raise ValueError(
+ValueError: With n_samples=0, test_size=0.1 and train_size=None, the resulting train set will be empty. Adjust any of the aforementioned parameters.

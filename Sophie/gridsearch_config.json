@@ -9,8 +9,8 @@
   "global_args": {
     "train_file":      "../data/preprocessed_data/train_minimal.csv",
     "test_file":       "../data/preprocessed_data/test_minimal.csv",
-    "paraphrase_file": "../data/synthetic_data/paraphrased.csv",
-    "generated_file":  "../data/synthetic_data/generated.csv",
+    "paraphrase_file": "/u/halle/ophe/home_at/Desktop/nlp/data/synthethic_data/paraphrased.csv",
+    "generated_file":  "/u/halle/ophe/home_at/Desktop/nlp/data/synthethic_data/generated.csv",
     "models":          ["gbert", "xlmr", "deberta", "mdeberta", "gelectra"],
     "seed":            42,
     "max_length":      128,

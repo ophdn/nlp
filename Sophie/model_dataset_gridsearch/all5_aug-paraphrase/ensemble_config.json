@@ -1,0 +1,80 @@
+{
+  "train_file": "../data/preprocessed_data/train_minimal.csv",
+  "test_file": "../data/preprocessed_data/test_minimal.csv",
+  "paraphrase_file": "../data/synthetic_data/paraphrased.csv",
+  "generated_file": "../data/synthetic_data/generated.csv",
+  "augmentation": "paraphrase",
+  "fourth_model_path": null,
+  "fourth_model_base": "FacebookAI/xlm-roberta-large",
+  "fourth_model_name": "mario",
+  "out_dir": "model_dataset_gridsearch/all5_aug-paraphrase",
+  "results_csv": "results.csv",
+  "seed": 42,
+  "max_length": 128,
+  "batch_size": 16,
+  "lr": 2e-05,
+  "weight_decay": 0.01,
+  "max_grad_norm": 1.0,
+  "warmup_steps": 500,
+  "max_epochs": 10,
+  "eval_every": 40,
+  "patience": 50,
+  "val_size": 0.1,
+  "dropout": 0.1,
+  "models": [
+    "deepset/gbert-large",
+    "FacebookAI/xlm-roberta-large",
+    "microsoft/deberta-v3-base"
+  ],
+  "fourth_model_used": false,
+  "classes": [
+    "agitation",
+    "criticism",
+    "nothing",
+    "subversive"
+  ],
+  "class_weights": {
+    "agitation": 27.6492,
+    "criticism": 2.1551,
+    "nothing": 0.2868,
+    "subversive": 74.3073
+  },
+  "n_train": 14267,
+  "n_val": 1586,
+  "aug_files_used": [],
+  "ensemble_val_macro_f1": 0.58932,
+  "ensemble_per_class_f1": {
+    "agitation": 0.52632,
+    "criticism": 0.63073,
+    "nothing": 0.95025,
+    "subversive": 0.25
+  },
+  "individual_results": {
+    "gbert": {
+      "val_macro_f1": 0.59027,
+      "is_external": false,
+      "agitation": 0.45455,
+      "criticism": 0.66667,
+      "nothing": 0.95417,
+      "subversive": 0.28571
+    },
+    "xlmr": {
+      "val_macro_f1": 0.55339,
+      "is_external": false,
+      "agitation": 0.44444,
+      "criticism": 0.57459,
+      "nothing": 0.94452,
+      "subversive": 0.25
+    },
+    "deberta": {
+      "val_macro_f1": 0.51387,
+      "is_external": false,
+      "agitation": 0.5,
+      "criticism": 0.61069,
+      "nothing": 0.94481,
+      "subversive": 0.0
+    }
+  },
+  "device": "cuda",
+  "timestamp": "2026-06-11T16:14:19.122394"
+}
