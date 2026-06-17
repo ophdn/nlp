@@ -1,0 +1,43 @@
+GermEval 2026 - Subtask 2: 5-Modell Ensemble Report
+─────────────────────────────────────────────────────────────────
+Timestamp:       2026-06-17 15:39
+Augmentierung:   both
+Modelle:         5 (3 bestehende Checkpoints + 2 neu trainiert)
+  Bestehend:     gbert, xlmr, deberta
+  Neu trainiert: mdeberta, gelectra
+Train:           15,287 (Basis: 14,267 + Aug: 1,020)
+Val:             1,586
+Device:          cuda
+
+Ergebnisse Einzelmodelle (Val-Set):
+  gbert        Macro-F1: 0.67636  agitation: 0.609  subversive: 0.533 [Checkpoint]
+  xlmr         Macro-F1: 0.40101  agitation: 0.296  subversive: 0.000 [Checkpoint]
+  deberta      Macro-F1: 0.71311  agitation: 0.588  subversive: 0.727 [Checkpoint]
+  mdeberta     Macro-F1: 0.74611  agitation: 0.636  subversive: 0.800 [NEU]
+  gelectra     Macro-F1: 0.73897  agitation: 0.538  subversive: 0.889 [NEU]
+
+Ensemble Ergebnis 5 Modelle (Val-Set):
+  Macro-F1: 0.79545
+  agitation       0.72727
+  criticism       0.61128
+  nothing         0.95435
+  subversive      0.88889
+
+Vergleich 3-Modell vs. 5-Modell Ensemble:
+  3-Modell Macro-F1: 0.69652
+  5-Modell Macro-F1: 0.79545
+  Differenz:         +0.09893
+
+              precision    recall  f1-score   support
+
+   agitation       1.00      0.57      0.73        14
+   criticism       0.67      0.56      0.61       184
+     nothing       0.94      0.97      0.95      1383
+  subversive       1.00      0.80      0.89         5
+
+    accuracy                           0.92      1586
+   macro avg       0.90      0.72      0.80      1586
+weighted avg       0.91      0.92      0.91      1586
+
+Trainingszeit (nur neue Modelle): 43.1 min
+─────────────────────────────────────────────────────────────────
