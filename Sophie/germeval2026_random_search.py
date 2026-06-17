@@ -62,10 +62,15 @@ for i in range(args.n):
     })
 
 config = {
-    "base_script":   "germeval2026_ensemble_train.py",
+    "base_script":   "Sophie/germeval2026_ensemble_train.py",
     "base_out_dir":  "model_dataset_gridsearch",
     "results_csv":   "results.csv",
-    "global_args":   {},
+    "global_args":   {
+        "train_file":      "preprocessed/train_minimal.csv",
+        "test_file":       "preprocessed/test_minimal.csv",
+        "paraphrase_file": "synthethic_data/paraphrased.csv",
+        "generated_file":  "preprocessed/synthetic_data.csv",
+    },
     "runs":          runs,
 }
 
