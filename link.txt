@@ -1,1 +1,25 @@
 https://nextcloud.in.tum.de/index.php/s/YFq3RbDW7iPro7B
+
+# C2A
+python germeval2026_transfer.py \
+  --task c2a \
+  --dbo_checkpoint model_dataset_gridsearch/all5_aug-paraphrase/model_gbert/best_model_weights.pt \
+  --model_name deepset/gbert-large \
+  --train_file ../data/GermEval2026/data/c2a/c2a_train_26.csv \
+  --out_dir transfer_runs/gbert_c2a
+
+# VIO
+python germeval2026_transfer.py \
+  --task vio \
+  --dbo_checkpoint model_dataset_gridsearch/all5_aug-paraphrase/model_mdeberta/best_model_weights.pt \
+  --model_name microsoft/mdeberta-v3-base \
+  --train_file ../data/GermEval2026/data/vio/vio_train_26.csv \
+  --out_dir transfer_runs/mdeberta_vio
+
+# DEF
+python germeval2026_transfer.py \
+  --task def \
+  --dbo_checkpoint model_dataset_gridsearch/all5_aug-paraphrase/model_gelectra/best_model_weights.pt \
+  --model_name deepset/gelectra-large-germanquad \
+  --train_file ../data/GermEval2026/data/def/def_train_26.csv \
+  --out_dir transfer_runs/gelectra_def
