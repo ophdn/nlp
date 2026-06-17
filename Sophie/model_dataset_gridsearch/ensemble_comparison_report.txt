@@ -1,0 +1,122 @@
+GermEval 2026 – Ensemble Comparison Report
+======================================================================
+Timestamp:   2026-06-17 17:00
+Konfigurationen getestet: 24
+Val-Set:     1586 Samples  |  Klassen: ['agitation', 'criticism', 'nothing', 'subversive']
+
+======================================================================
+  STÄRKEN & SCHWÄCHEN DER BESTEN CHECKPOINTS
+======================================================================
+
+  GBERT        [all5_aug-paraphrase]
+    Macro-F1: 0.72766
+    Per-Klasse: agitation: 0.720  criticism: 0.624  nothing: 0.951  subversive: 0.615
+    Analyse:  Guter Allrounder. Stärke: agitation (0.72), solides subversive (0.62). Schwäche: schwächstes subversive der Top-Modelle.
+
+  XLMR         [all5_aug-none]
+    Macro-F1: 0.55339
+    Per-Klasse: agitation: 0.444  criticism: 0.575  nothing: 0.945  subversive: 0.250
+    Analyse:  Schwächstes Modell. Stärke: multilinguale Diversität, agitation 0.44 ohne Aug. Schwäche: bricht bei jeder Augmentierung komplett ein (agit/subv → 0.0 mit para). Checkpoint aus aug-none nehmen.
+
+  DEBERTA      [all5_aug-paraphrase]
+    Macro-F1: 0.73466
+    Per-Klasse: agitation: 0.667  criticism: 0.601  nothing: 0.944  subversive: 0.727
+    Analyse:  Stark bei seltenen Klassen. Stärke: subversive 0.73, gute Balance. Schwäche: agitation 0.67 (hinter gbert/mdeberta/gelectra).
+
+  MDEBERTA     [all5_aug-paraphrase]
+    Macro-F1: 0.78848
+    Per-Klasse: agitation: 0.727  criticism: 0.592  nothing: 0.946  subversive: 0.889
+    Analyse:  Bestes Einzelmodell. Stärke: subversive 0.889 (gemeinsam bestes), agitation 0.73. Schwäche: ähnlich wie gelectra → hohe Korrelation, wenig Diversitätsgewinn.
+
+  GELECTRA     [all5_aug-paraphrase]
+    Macro-F1: 0.78633
+    Per-Klasse: agitation: 0.727  criticism: 0.574  nothing: 0.955  subversive: 0.889
+    Analyse:  Gleich stark wie mdeberta. Stärke: subversive 0.889, agitation 0.73. Schwäche: Germano-spezifisch (germanquad pre-training) → weniger cross-linguale Diversität.
+
+──────────────────────────────────────────────────────────────────────
+  GEWICHTUNGSMATRIZEN (Val-F1 pro Modell × Klasse)
+──────────────────────────────────────────────────────────────────────
+
+  [para]
+  Modell           agitation   criticism     nothing  subversive    Macro-F1
+  ────────────────────────────────────────────────────────────
+  gbert                0.720       0.624       0.951       0.615     0.72766
+  xlmr                 0.000       0.367       0.892       0.000     0.31492
+  deberta              0.667       0.601       0.944       0.727     0.73466
+  mdeberta             0.727       0.592       0.946       0.889     0.78848
+  gelectra             0.727       0.574       0.955       0.889     0.78633
+
+  [both]
+  Modell           agitation   criticism     nothing  subversive    Macro-F1
+  ────────────────────────────────────────────────────────────
+  gbert                0.609       0.612       0.951       0.533     0.67636
+  xlmr                 0.296       0.403       0.905       0.000     0.40101
+  deberta              0.588       0.592       0.945       0.727     0.71311
+  mdeberta             0.636       0.593       0.955       0.800     0.74611
+  gelectra             0.538       0.577       0.952       0.889     0.73897
+
+  [none]
+  Modell           agitation   criticism     nothing  subversive    Macro-F1
+  ────────────────────────────────────────────────────────────
+  xlmr                 0.444       0.575       0.945       0.250     0.55339
+
+======================================================================
+  ENSEMBLE-VERGLEICH (sortiert nach Macro-F1)
+======================================================================
+  Rang  Konfiguration                          Strategie    #   agit    crit    noth    subv      Macro-F1
+  ──────────────────────────────────────────────────────────────────────
+  1     A8_trio_mde_gel_gbert_uni              uniform      3   0.7273  0.6297  0.9557  0.8889  0.80040  ← BEST
+  2     D6_trio_winner_para                    winner       3   0.7273  0.6254  0.9526  0.8889  0.79853
+  3     A9_duo_mde_gel                         uniform      2   0.7273  0.6185  0.9538  0.8889  0.79713
+  4     B2_all5_perclass_both                  per_class    5   0.7273  0.6136  0.9543  0.8889  0.79601
+  5     B1_all5_uniform_both                   uniform      5   0.7273  0.6113  0.9544  0.8889  0.79545  ← Ref
+  6     B4_top4_noxlmr_both_pcls               per_class    4   0.7273  0.6113  0.9544  0.8889  0.79545
+  7     A6_trio_mde_gel_deb_uni                uniform      3   0.7273  0.6000  0.9525  0.8889  0.79217
+  8     A7_trio_mde_gel_deb_pcls               per_class    3   0.7273  0.6000  0.9525  0.8889  0.79217
+  9     S1_mdeberta_para                       uniform      1   0.7273  0.5920  0.9458  0.8889  0.78848
+  10    S2_gelectra_para                       uniform      1   0.7273  0.5743  0.9549  0.8889  0.78633
+  11    A5_top4_noxlmr_perclass                per_class    4   0.7273  0.6398  0.9560  0.8000  0.78075
+  12    D1_all5_winner_para                    winner       5   0.7273  0.6331  0.9565  0.8000  0.77922
+  13    D2_top4_winner_para                    winner       4   0.7273  0.6331  0.9565  0.8000  0.77922
+  14    D5_all5_winner_mixed                   winner       5   0.7273  0.6331  0.9565  0.8000  0.77922
+  15    A2_all5_perclass_para                  per_class    5   0.7273  0.6261  0.9546  0.8000  0.77698
+  16    A3_all5_macroF1_para                   macro_f1     5   0.7273  0.6261  0.9546  0.8000  0.77698
+  17    A1_all5_uniform_para                   uniform      5   0.7273  0.6140  0.9535  0.8000  0.77371  ← Ref
+  18    B3_top4_noxlmr_both_uni                uniform      4   0.7273  0.6095  0.9536  0.8000  0.77259
+  19    A4_top4_noxlmr_uniform                 uniform      4   0.7273  0.6377  0.9556  0.7273  0.76196
+  20    C1_all5_uniform_mixed                  uniform      5   0.7273  0.6158  0.9535  0.7273  0.75598
+  21    C2_all5_perclass_mixed                 per_class    5   0.7273  0.6158  0.9535  0.7273  0.75598
+  22    D3_all5_winner_both                    winner       5   0.6364  0.6154  0.9543  0.8000  0.75152
+  23    D4_top4_winner_both                    winner       4   0.6364  0.6154  0.9543  0.8000  0.75152
+  24    S3_deberta_para                        uniform      1   0.6667  0.6010  0.9437  0.7273  0.73466
+
+======================================================================
+  BESTE KONFIGURATION: A8_trio_mde_gel_gbert_uni
+======================================================================
+  Modelle:   mdeberta+gelectra+gbert
+  Strategie: uniform
+  Macro-F1:  0.80040
+
+              precision    recall  f1-score   support
+
+   agitation       1.00      0.57      0.73        14
+   criticism       0.68      0.59      0.63       184
+     nothing       0.94      0.97      0.96      1383
+  subversive       1.00      0.80      0.89         5
+
+    accuracy                           0.92      1586
+   macro avg       0.91      0.73      0.80      1586
+weighted avg       0.91      0.92      0.92      1586
+
+======================================================================
+  EMPFEHLUNG
+======================================================================
+  Beste Konfiguration:      A8_trio_mde_gel_gbert_uni              Macro-F1: 0.80040
+  vs. Referenz B1 (both):   B1_all5_uniform_both                   Macro-F1: 0.79545  (+0.00495)
+  vs. Referenz A1 (para):   A1_all5_uniform_para                   Macro-F1: 0.77371  (+0.02668)
+
+  BEFUND: All-5 (both) ist besser als Top-4 ohne xlmr um 0.02286 → xlmr trägt netto positiv bei.
+
+  Für Checkpoint-Auswahl beim nächsten Training empfohlen:
+    → A8_trio_mde_gel_gbert_uni als Basis-Ensemble-Strategie
+======================================================================

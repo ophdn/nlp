@@ -1,0 +1,3 @@
+run,status,aug,ensemble_3model_f1,ensemble_5model_f1,delta,new_model_minutes,gbert_macro_f1,xlmr_macro_f1,deberta_macro_f1,mdeberta_macro_f1,gelectra_macro_f1
+all5_aug-generated,OK,generated,0.53838,0.56893,0.03055,24.599999999999998,0.53567,0.32817,0.51722,0.48068,0.53889
+all5_aug-none,OK,none,0.58932,0.60512,0.0158,44.4,0.59027,0.55339,0.51387,0.5933,0.53108

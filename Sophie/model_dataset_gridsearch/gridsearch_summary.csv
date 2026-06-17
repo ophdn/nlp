@@ -1,0 +1,5 @@
+run_index,run_name,status,minutes,out_dir,log,finished_at
+0,all5_aug-none,OK,76.1,model_dataset_gridsearch/all5_aug-none,model_dataset_gridsearch/all5_aug-none/stdout.log,2026-06-11 18:23
+1,all5_aug-paraphrase,OK,70.4,model_dataset_gridsearch/all5_aug-paraphrase,model_dataset_gridsearch/all5_aug-paraphrase/stdout.log,2026-06-11 19:34
+2,all5_aug-generated,OK,52.7,model_dataset_gridsearch/all5_aug-generated,model_dataset_gridsearch/all5_aug-generated/stdout.log,2026-06-11 20:26
+3,all5_aug-both,OK,70.8,model_dataset_gridsearch/all5_aug-both,model_dataset_gridsearch/all5_aug-both/stdout.log,2026-06-11 21:37
