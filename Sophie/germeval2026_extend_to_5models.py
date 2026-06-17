@@ -77,8 +77,15 @@ if args.run_dirs:
     run_dirs = [Path(d) for d in args.run_dirs]
 else:
     base = Path(args.base_dir)
-    run_dirs = sorted(p for p in base.iterdir()
-                      if p.is_dir() and (p / "ensemble_config.json").exists())
+    AUG_ORDER = ["paraphrase", "both", "none", "generated"]
+    all_dirs  = [p for p in base.iterdir()
+                 if p.is_dir() and (p / "ensemble_config.json").exists()]
+    def aug_sort_key(p):
+        for i, aug in enumerate(AUG_ORDER):
+            if aug in p.name:
+                return i
+        return len(AUG_ORDER)
+    run_dirs = sorted(all_dirs, key=aug_sort_key)
 
 if not run_dirs:
     print(f"ERROR: Keine Run-Ordner mit ensemble_config.json gefunden in '{args.base_dir}'")
