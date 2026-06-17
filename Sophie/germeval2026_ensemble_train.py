@@ -117,8 +117,11 @@ _ALL_MODEL_CONFIGS = {
         "shortname": "gbert",
     },
     "xlmr": {
-        "model_id":  "FacebookAI/xlm-roberta-large",
-        "shortname": "xlmr",
+        "model_id":       "FacebookAI/xlm-roberta-large",
+        "shortname":      "xlmr",
+        "lr":             1e-5,   # XLM-R-large kollabiert bei 2e-5 durch Gradient Explosion
+        "warmup_steps":   1000,   # mehr Warmup stabilisiert den Anfang
+        "max_grad_norm":  0.5,    # aggressiveres Clipping als Sicherheitsnetz
     },
     "deberta": {
         "model_id":  "microsoft/deberta-v3-base",
@@ -355,13 +358,19 @@ def train_single_model(cfg):
     print(f"  Trainiere: {model_id}")
     print(f"{'─'*65}")
 
+    lr            = cfg.get("lr",            args.lr)
+    warmup_steps  = cfg.get("warmup_steps",  args.warmup_steps)
+    max_grad_norm = cfg.get("max_grad_norm", args.max_grad_norm)
+    if any(k in cfg for k in ("lr", "warmup_steps", "max_grad_norm")):
+        print(f"  Modell-spezifische Hyperparameter: lr={lr}, warmup={warmup_steps}, grad_clip={max_grad_norm}")
+
     tokenizer = AutoTokenizer.from_pretrained(model_id, use_fast=False)
     train_loader, val_loader = make_loaders(df_train, df_val, tokenizer, args.batch_size)
 
     model       = TransformerClassifier(model_id, N_CLASSES, args.dropout).to(DEVICE)
     total_steps = len(train_loader) * args.max_epochs
-    optimizer   = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
-    scheduler   = get_linear_schedule_with_warmup(optimizer, args.warmup_steps, total_steps)
+    optimizer   = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=args.weight_decay)
+    scheduler   = get_linear_schedule_with_warmup(optimizer, warmup_steps, total_steps)
     criterion   = nn.CrossEntropyLoss(weight=weights_tensor)
 
     def evaluate():
@@ -400,7 +409,7 @@ def train_single_model(cfg):
             optimizer.zero_grad()
             loss = criterion(model(ids, mask), lbls)
             loss.backward()
-            nn.utils.clip_grad_norm_(model.parameters(), args.max_grad_norm)
+            nn.utils.clip_grad_norm_(model.parameters(), max_grad_norm)
             optimizer.step()
             scheduler.step()
             global_step += 1
