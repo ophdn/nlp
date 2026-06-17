@@ -57,6 +57,11 @@ TASK_CONFIG = {
     "dbo": {"classes": ["agitation", "criticism", "nothing", "subversive"]},
 }
 
+# Tippfehler in den Rohdaten → korrekte Label-Schreibweise
+LABEL_FIXES = {
+    "prospensity": "propensity",
+}
+
 MODEL_REGISTRY = {
     "gbert":    "deepset/gbert-large",
     "xlmr":     "FacebookAI/xlm-roberta-large",
@@ -97,7 +102,7 @@ def load_and_preprocess(path: Path, has_label: bool = True) -> pd.DataFrame:
         label_col = label_candidates[0] if label_candidates else \
             [c for c in df.columns if c != text_col][0]
         df = df[[text_col, label_col]].rename(columns={text_col: "text", label_col: "label"})
-        df["label"] = df["label"].astype(str).str.strip()
+        df["label"] = df["label"].astype(str).str.strip().replace(LABEL_FIXES)
     else:
         id_candidates = [c for c in df.columns if c.lower() == "id"]
         id_col = id_candidates[0] if id_candidates else df.columns[0]
@@ -167,7 +172,7 @@ print(f"  GermEval 2026 – Transfer Learning")
 print(f"{'='*65}")
 print(f"  Task:         {args.task.upper()}  ({N_CLASSES} Klassen: {CLASSES})")
 print(f"  Modelle:      {args.models}")
-print(f"  DBO-Run:      {SOURCE_RUN}")
+print(f"  Source-Run:   {SOURCE_RUN}")
 print(f"  Device:       {DEVICE}")
 print(f"  LR Encoder:   {args.lr_encoder}  |  LR Head: {args.lr_head}")
 print(f"  Freeze:       Encoder für erste {args.freeze_epochs} Epoch(s)")
