@@ -68,6 +68,8 @@ parser.add_argument("--dry_run",   action="store_true",
                     help="Nur Runs auflisten, nicht trainieren")
 parser.add_argument("--skip_done", action="store_true",
                     help="Runs ueberspringen wenn final_report_5.txt bereits existiert")
+parser.add_argument("--reverse",   action="store_true",
+                    help="Run-Reihenfolge umkehren (fuer zweite GPU, die von hinten anfaengt)")
 args = parser.parse_args()
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -86,6 +88,8 @@ else:
                 return i
         return len(AUG_ORDER)
     run_dirs = sorted(all_dirs, key=aug_sort_key)
+    if args.reverse:
+        run_dirs = list(reversed(run_dirs))
 
 if not run_dirs:
     print(f"ERROR: Keine Run-Ordner mit ensemble_config.json gefunden in '{args.base_dir}'")
