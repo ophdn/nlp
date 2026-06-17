@@ -244,14 +244,6 @@ aug_files_used = []
 if len(df_para) > 0: aug_files_used.append(args.paraphrase_file)
 if len(df_gen)  > 0: aug_files_used.append(args.generated_file)
 
-print(f"\n  Trainingsdaten nach Augmentierung:")
-df_all = pd.concat([df_main] + ([df_para] if len(df_para)>0 else []) +
-                   ([df_gen]  if len(df_gen)>0  else []), ignore_index=True)
-for lbl, cnt in df_all["label"].value_counts().items():
-    bar = "█" * (cnt // 100)
-    pct = cnt / len(df_all) * 100
-    print(f"    {lbl:<15} {cnt:>6,}  ({pct:5.1f}%)  {bar}")
-
 # Val-Split aus Hauptdaten, augmentierte Daten NUR ins Training
 df_train_base, df_val = train_test_split(
     df_main, test_size=args.val_size, stratify=df_main["label"], random_state=args.seed
@@ -263,6 +255,12 @@ aug_extra = pd.concat(
 df_train = pd.concat([df_train_base, aug_extra], ignore_index=True).sample(
     frac=1, random_state=args.seed
 ).reset_index(drop=True)
+
+print(f"\n  Trainingsdaten nach Augmentierung (ohne Val-Set):")
+for lbl, cnt in df_train["label"].value_counts().items():
+    bar = "█" * (cnt // 100)
+    pct = cnt / len(df_train) * 100
+    print(f"    {lbl:<15} {cnt:>6,}  ({pct:5.1f}%)  {bar}")
 
 print(f"\n  Train: {len(df_train):,}  |  Val: {len(df_val):,}  (Val-Set enthaelt keine augmentierten Daten)")
 
