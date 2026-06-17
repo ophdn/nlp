@@ -73,6 +73,12 @@ parser.add_argument("--generated_file",  default="preprocessed/synthetic_data.cs
 parser.add_argument("--augmentation", default="none",
                     choices=["none", "paraphrase", "generated", "both"])
 
+# Modell-Auswahl
+parser.add_argument("--models", nargs="+",
+                    default=["gbert", "xlmr", "deberta"],
+                    choices=["gbert", "xlmr", "deberta"],
+                    help="Modelle fuer das Ensemble (default: alle drei)")
+
 # 4. Modell (optional) - externer Checkpoint, wird NICHT neu trainiert
 parser.add_argument("--fourth_model_path", default=None,
                     help="Pfad zu einem externen .pt Checkpoint (z.B. Marios Modell). "
@@ -105,7 +111,7 @@ args, _ = parser.parse_known_args()
 # ------------------------------------------------------------------------------
 # 2. Modell-Konfigurationen (die 3 trainierten Modelle)
 # ------------------------------------------------------------------------------
-MODEL_CONFIGS = {
+_ALL_MODEL_CONFIGS = {
     "gbert": {
         "model_id":  "deepset/gbert-large",
         "shortname": "gbert",
@@ -119,6 +125,7 @@ MODEL_CONFIGS = {
         "shortname": "deberta",
     },
 }
+MODEL_CONFIGS = {k: v for k, v in _ALL_MODEL_CONFIGS.items() if k in args.models}
 
 # ------------------------------------------------------------------------------
 # 3. Setup
