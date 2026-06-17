@@ -1,0 +1,35 @@
+GermEval 2026 - Subtask 2: Ensemble Training Report
+─────────────────────────────────────────────────────────────────
+Timestamp:       2026-06-11 21:37
+Augmentierung:   both
+Modelle:         3 (3 trainiert)
+Train:           15,287 (Basis: 14,267 + Aug: 1,020)
+Val:             1,586
+Device:          cuda
+
+
+Ergebnisse Einzelmodelle (Val-Set):
+  gbert        Macro-F1: 0.67636  agitation: 0.609  subversive: 0.533
+  xlmr         Macro-F1: 0.40101  agitation: 0.296  subversive: 0.000
+  deberta      Macro-F1: 0.71311  agitation: 0.588  subversive: 0.727
+
+Ensemble Ergebnis (Val-Set):
+  Macro-F1: 0.69652
+  agitation       0.60870
+  criticism       0.61236
+  nothing         0.94964
+  subversive      0.61538
+
+              precision    recall  f1-score   support
+
+   agitation       0.78      0.50      0.61        14
+   criticism       0.63      0.59      0.61       184
+     nothing       0.94      0.95      0.95      1383
+  subversive       0.50      0.80      0.62         5
+
+    accuracy                           0.91      1586
+   macro avg       0.71      0.71      0.70      1586
+weighted avg       0.91      0.91      0.91      1586
+
+Trainingszeit: 69.9 min
+─────────────────────────────────────────────────────────────────

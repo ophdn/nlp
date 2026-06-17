@@ -3,11 +3,11 @@
   "test_file": "../data/preprocessed_data/test_minimal.csv",
   "paraphrase_file": "/u/halle/ophe/home_at/Desktop/nlp/data/synthethic_data/paraphrased.csv",
   "generated_file": "/u/halle/ophe/home_at/Desktop/nlp/data/synthethic_data/generated.csv",
-  "augmentation": "paraphrase",
+  "augmentation": "both",
   "fourth_model_path": null,
   "fourth_model_base": "FacebookAI/xlm-roberta-large",
   "fourth_model_name": "mario",
-  "out_dir": "model_dataset_gridsearch/all5_aug-paraphrase",
+  "out_dir": "model_dataset_gridsearch/all5_aug-both",
   "results_csv": "results.csv",
   "seed": 42,
   "max_length": 128,
@@ -39,44 +39,45 @@
     "nothing": 0.2868,
     "subversive": 74.3073
   },
-  "n_train": 14695,
+  "n_train": 15287,
   "n_val": 1586,
   "aug_files_used": [
-    "/u/halle/ophe/home_at/Desktop/nlp/data/synthethic_data/paraphrased.csv"
+    "/u/halle/ophe/home_at/Desktop/nlp/data/synthethic_data/paraphrased.csv",
+    "/u/halle/ophe/home_at/Desktop/nlp/data/synthethic_data/generated.csv"
   ],
-  "ensemble_val_macro_f1": 0.76038,
+  "ensemble_val_macro_f1": 0.69652,
   "ensemble_per_class_f1": {
-    "agitation": 0.72727,
-    "criticism": 0.63612,
-    "nothing": 0.95087,
-    "subversive": 0.72727
+    "agitation": 0.6087,
+    "criticism": 0.61236,
+    "nothing": 0.94964,
+    "subversive": 0.61538
   },
   "individual_results": {
     "gbert": {
-      "val_macro_f1": 0.72766,
+      "val_macro_f1": 0.67636,
       "is_external": false,
-      "agitation": 0.72,
-      "criticism": 0.62431,
-      "nothing": 0.95094,
-      "subversive": 0.61538
+      "agitation": 0.6087,
+      "criticism": 0.61236,
+      "nothing": 0.95104,
+      "subversive": 0.53333
     },
     "xlmr": {
-      "val_macro_f1": 0.31492,
+      "val_macro_f1": 0.40101,
       "is_external": false,
-      "agitation": 0.0,
-      "criticism": 0.36735,
-      "nothing": 0.89233,
+      "agitation": 0.2963,
+      "criticism": 0.40288,
+      "nothing": 0.90488,
       "subversive": 0.0
     },
     "deberta": {
-      "val_macro_f1": 0.73466,
+      "val_macro_f1": 0.71311,
       "is_external": false,
-      "agitation": 0.66667,
-      "criticism": 0.60104,
-      "nothing": 0.94366,
+      "agitation": 0.58824,
+      "criticism": 0.59218,
+      "nothing": 0.94475,
       "subversive": 0.72727
     }
   },
   "device": "cuda",
-  "timestamp": "2026-06-11T19:34:16.844093"
+  "timestamp": "2026-06-11T21:37:44.513681"
 }

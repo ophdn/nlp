@@ -10,15 +10,15 @@
   Lade Daten ...
   OK Hauptdaten (train_minimal)   15,853 Zeilen  (train_minimal.csv)
   OK Testdaten (test_minimal)        999 Zeilen  (test_minimal.csv)
-  WARNING  Datei nicht gefunden (wird uebersprungen): ../data/synthetic_data/generated.csv
+  OK Grok-Generierungen              592 Zeilen  (generated.csv)  [sep=';']
 
   Trainingsdaten nach Augmentierung:
-    nothing         13,818  ( 87.2%)  ██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
-    criticism        1,839  ( 11.6%)  ██████████████████
-    agitation          143  (  0.9%)  █
-    subversive          53  (  0.3%)  
+    nothing         13,818  ( 84.0%)  ██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+    criticism        1,839  ( 11.2%)  ██████████████████
+    subversive         407  (  2.5%)  ████
+    agitation          381  (  2.3%)  ███
 
-  Train: 14,267  |  Val: 1,586  (Val-Set enthaelt keine augmentierten Daten)
+  Train: 14,859  |  Val: 1,586  (Val-Set enthaelt keine augmentierten Daten)
 
   Klassen (4): ['agitation', 'criticism', 'nothing', 'subversive']
 
@@ -40,144 +40,139 @@
 /u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py:949: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
   warnings.warn(
   Training: max 10 Epochs | Eval alle 40 Steps | Patience 50
-  [gbert] Step    40 | Ep 1 | Macro-F1 0.0815 | OK Bestes Modell
-  [gbert] Step    80 | Ep 1 | Macro-F1 0.3295 | OK Bestes Modell
-  [gbert] Step   120 | Ep 1 | Macro-F1 0.3283 | kein Fortschritt 1/50
-  [gbert] Step   160 | Ep 1 | Macro-F1 0.3453 | OK Bestes Modell
-  [gbert] Step   200 | Ep 1 | Macro-F1 0.3467 | OK Bestes Modell
-  [gbert] Step   240 | Ep 1 | Macro-F1 0.4153 | OK Bestes Modell
-  [gbert] Step   280 | Ep 1 | Macro-F1 0.3848 | kein Fortschritt 1/50
-  [gbert] Step   320 | Ep 1 | Macro-F1 0.3131 | kein Fortschritt 2/50
-  [gbert] Step   360 | Ep 1 | Macro-F1 0.4380 | OK Bestes Modell
-  [gbert] Step   400 | Ep 1 | Macro-F1 0.4886 | OK Bestes Modell
-  [gbert] Step   440 | Ep 1 | Macro-F1 0.4802 | kein Fortschritt 1/50
-  [gbert] Step   480 | Ep 1 | Macro-F1 0.4485 | kein Fortschritt 2/50
-  [gbert] Step   520 | Ep 1 | Macro-F1 0.4243 | kein Fortschritt 3/50
-  [gbert] Step   560 | Ep 1 | Macro-F1 0.4847 | kein Fortschritt 4/50
-  [gbert] Step   600 | Ep 1 | Macro-F1 0.4869 | kein Fortschritt 5/50
-  [gbert] Step   640 | Ep 1 | Macro-F1 0.4199 | kein Fortschritt 6/50
-  [gbert] Step   680 | Ep 1 | Macro-F1 0.4625 | kein Fortschritt 7/50
-  [gbert] Step   720 | Ep 1 | Macro-F1 0.4713 | kein Fortschritt 8/50
-  [gbert] Step   760 | Ep 1 | Macro-F1 0.4851 | kein Fortschritt 9/50
-  [gbert] Step   800 | Ep 1 | Macro-F1 0.4715 | kein Fortschritt 10/50
-  [gbert] Step   840 | Ep 1 | Macro-F1 0.4711 | kein Fortschritt 11/50
-  [gbert] Step   880 | Ep 1 | Macro-F1 0.5223 | OK Bestes Modell
-  [gbert] Step   920 | Ep 2 | Macro-F1 0.5132 | kein Fortschritt 1/50
-  [gbert] Step   960 | Ep 2 | Macro-F1 0.4825 | kein Fortschritt 2/50
-  [gbert] Step  1000 | Ep 2 | Macro-F1 0.5039 | kein Fortschritt 3/50
-  [gbert] Step  1040 | Ep 2 | Macro-F1 0.5246 | OK Bestes Modell
-  [gbert] Step  1080 | Ep 2 | Macro-F1 0.5142 | kein Fortschritt 1/50
-  [gbert] Step  1120 | Ep 2 | Macro-F1 0.4907 | kein Fortschritt 2/50
-  [gbert] Step  1160 | Ep 2 | Macro-F1 0.4296 | kein Fortschritt 3/50
-  [gbert] Step  1200 | Ep 2 | Macro-F1 0.4830 | kein Fortschritt 4/50
-  [gbert] Step  1240 | Ep 2 | Macro-F1 0.5367 | OK Bestes Modell
-  [gbert] Step  1280 | Ep 2 | Macro-F1 0.4456 | kein Fortschritt 1/50
-  [gbert] Step  1320 | Ep 2 | Macro-F1 0.2329 | kein Fortschritt 2/50
-  [gbert] Step  1360 | Ep 2 | Macro-F1 0.2329 | kein Fortschritt 3/50
-  [gbert] Step  1400 | Ep 2 | Macro-F1 0.0520 | kein Fortschritt 4/50
-  [gbert] Step  1440 | Ep 2 | Macro-F1 0.0520 | kein Fortschritt 5/50
-  [gbert] Step  1480 | Ep 2 | Macro-F1 0.0520 | kein Fortschritt 6/50
-  [gbert] Step  1520 | Ep 2 | Macro-F1 0.0520 | kein Fortschritt 7/50
-  [gbert] Step  1560 | Ep 2 | Macro-F1 0.0520 | kein Fortschritt 8/50
-  [gbert] Step  1600 | Ep 2 | Macro-F1 0.2329 | kein Fortschritt 9/50
-  [gbert] Step  1640 | Ep 2 | Macro-F1 0.0520 | kein Fortschritt 10/50
-  [gbert] Step  1680 | Ep 2 | Macro-F1 0.0520 | kein Fortschritt 11/50
-  [gbert] Step  1720 | Ep 2 | Macro-F1 0.4531 | kein Fortschritt 12/50
-  [gbert] Step  1760 | Ep 2 | Macro-F1 0.5301 | kein Fortschritt 13/50
-  [gbert] Step  1800 | Ep 3 | Macro-F1 0.4828 | kein Fortschritt 14/50
-  [gbert] Step  1840 | Ep 3 | Macro-F1 0.5167 | kein Fortschritt 15/50
-  [gbert] Step  1880 | Ep 3 | Macro-F1 0.5011 | kein Fortschritt 16/50
-  [gbert] Step  1920 | Ep 3 | Macro-F1 0.4890 | kein Fortschritt 17/50
-  [gbert] Step  1960 | Ep 3 | Macro-F1 0.5446 | OK Bestes Modell
-  [gbert] Step  2000 | Ep 3 | Macro-F1 0.4243 | kein Fortschritt 1/50
-  [gbert] Step  2040 | Ep 3 | Macro-F1 0.5563 | OK Bestes Modell
-  [gbert] Step  2080 | Ep 3 | Macro-F1 0.4912 | kein Fortschritt 1/50
-  [gbert] Step  2120 | Ep 3 | Macro-F1 0.4913 | kein Fortschritt 2/50
-  [gbert] Step  2160 | Ep 3 | Macro-F1 0.5022 | kein Fortschritt 3/50
-  [gbert] Step  2200 | Ep 3 | Macro-F1 0.4809 | kein Fortschritt 4/50
-  [gbert] Step  2240 | Ep 3 | Macro-F1 0.4532 | kein Fortschritt 5/50
-  [gbert] Step  2280 | Ep 3 | Macro-F1 0.5033 | kein Fortschritt 6/50
-  [gbert] Step  2320 | Ep 3 | Macro-F1 0.5016 | kein Fortschritt 7/50
-  [gbert] Step  2360 | Ep 3 | Macro-F1 0.4806 | kein Fortschritt 8/50
-  [gbert] Step  2400 | Ep 3 | Macro-F1 0.4716 | kein Fortschritt 9/50
-  [gbert] Step  2440 | Ep 3 | Macro-F1 0.5500 | kein Fortschritt 10/50
-  [gbert] Step  2480 | Ep 3 | Macro-F1 0.4788 | kein Fortschritt 11/50
-  [gbert] Step  2520 | Ep 3 | Macro-F1 0.4929 | kein Fortschritt 12/50
-  [gbert] Step  2560 | Ep 3 | Macro-F1 0.4839 | kein Fortschritt 13/50
-  [gbert] Step  2600 | Ep 3 | Macro-F1 0.4995 | kein Fortschritt 14/50
-  [gbert] Step  2640 | Ep 3 | Macro-F1 0.4952 | kein Fortschritt 15/50
-  [gbert] Step  2680 | Ep 4 | Macro-F1 0.4723 | kein Fortschritt 16/50
-  [gbert] Step  2720 | Ep 4 | Macro-F1 0.4901 | kein Fortschritt 17/50
-  [gbert] Step  2760 | Ep 4 | Macro-F1 0.5029 | kein Fortschritt 18/50
-  [gbert] Step  2800 | Ep 4 | Macro-F1 0.5101 | kein Fortschritt 19/50
-  [gbert] Step  2840 | Ep 4 | Macro-F1 0.5201 | kein Fortschritt 20/50
-  [gbert] Step  2880 | Ep 4 | Macro-F1 0.5429 | kein Fortschritt 21/50
-  [gbert] Step  2920 | Ep 4 | Macro-F1 0.5473 | kein Fortschritt 22/50
-  [gbert] Step  2960 | Ep 4 | Macro-F1 0.5272 | kein Fortschritt 23/50
-  [gbert] Step  3000 | Ep 4 | Macro-F1 0.5903 | OK Bestes Modell
-  [gbert] Step  3040 | Ep 4 | Macro-F1 0.5266 | kein Fortschritt 1/50
-  [gbert] Step  3080 | Ep 4 | Macro-F1 0.5271 | kein Fortschritt 2/50
-  [gbert] Step  3120 | Ep 4 | Macro-F1 0.4496 | kein Fortschritt 3/50
-  [gbert] Step  3160 | Ep 4 | Macro-F1 0.4603 | kein Fortschritt 4/50
-  [gbert] Step  3200 | Ep 4 | Macro-F1 0.4798 | kein Fortschritt 5/50
-  [gbert] Step  3240 | Ep 4 | Macro-F1 0.4710 | kein Fortschritt 6/50
-  [gbert] Step  3280 | Ep 4 | Macro-F1 0.4820 | kein Fortschritt 7/50
-  [gbert] Step  3320 | Ep 4 | Macro-F1 0.4583 | kein Fortschritt 8/50
-  [gbert] Step  3360 | Ep 4 | Macro-F1 0.4643 | kein Fortschritt 9/50
-  [gbert] Step  3400 | Ep 4 | Macro-F1 0.4651 | kein Fortschritt 10/50
-  [gbert] Step  3440 | Ep 4 | Macro-F1 0.4553 | kein Fortschritt 11/50
-  [gbert] Step  3480 | Ep 4 | Macro-F1 0.4686 | kein Fortschritt 12/50
-  [gbert] Step  3520 | Ep 4 | Macro-F1 0.4543 | kein Fortschritt 13/50
-  [gbert] Step  3560 | Ep 4 | Macro-F1 0.4533 | kein Fortschritt 14/50
-  [gbert] Step  3600 | Ep 5 | Macro-F1 0.4652 | kein Fortschritt 15/50
-  [gbert] Step  3640 | Ep 5 | Macro-F1 0.5169 | kein Fortschritt 16/50
-  [gbert] Step  3680 | Ep 5 | Macro-F1 0.4995 | kein Fortschritt 17/50
-  [gbert] Step  3720 | Ep 5 | Macro-F1 0.4437 | kein Fortschritt 18/50
-  [gbert] Step  3760 | Ep 5 | Macro-F1 0.5253 | kein Fortschritt 19/50
-  [gbert] Step  3800 | Ep 5 | Macro-F1 0.4663 | kein Fortschritt 20/50
-  [gbert] Step  3840 | Ep 5 | Macro-F1 0.4747 | kein Fortschritt 21/50
-  [gbert] Step  3880 | Ep 5 | Macro-F1 0.4878 | kein Fortschritt 22/50
-  [gbert] Step  3920 | Ep 5 | Macro-F1 0.4980 | kein Fortschritt 23/50
-  [gbert] Step  3960 | Ep 5 | Macro-F1 0.5520 | kein Fortschritt 24/50
-  [gbert] Step  4000 | Ep 5 | Macro-F1 0.5679 | kein Fortschritt 25/50
-  [gbert] Step  4040 | Ep 5 | Macro-F1 0.5213 | kein Fortschritt 26/50
-  [gbert] Step  4080 | Ep 5 | Macro-F1 0.5374 | kein Fortschritt 27/50
-  [gbert] Step  4120 | Ep 5 | Macro-F1 0.5385 | kein Fortschritt 28/50
-  [gbert] Step  4160 | Ep 5 | Macro-F1 0.5354 | kein Fortschritt 29/50
-  [gbert] Step  4200 | Ep 5 | Macro-F1 0.5382 | kein Fortschritt 30/50
-  [gbert] Step  4240 | Ep 5 | Macro-F1 0.5266 | kein Fortschritt 31/50
-  [gbert] Step  4280 | Ep 5 | Macro-F1 0.5340 | kein Fortschritt 32/50
-  [gbert] Step  4320 | Ep 5 | Macro-F1 0.4535 | kein Fortschritt 33/50
-  [gbert] Step  4360 | Ep 5 | Macro-F1 0.4858 | kein Fortschritt 34/50
-  [gbert] Step  4400 | Ep 5 | Macro-F1 0.5145 | kein Fortschritt 35/50
-  [gbert] Step  4440 | Ep 5 | Macro-F1 0.4854 | kein Fortschritt 36/50
-  [gbert] Step  4480 | Ep 6 | Macro-F1 0.4984 | kein Fortschritt 37/50
-  [gbert] Step  4520 | Ep 6 | Macro-F1 0.4844 | kein Fortschritt 38/50
-  [gbert] Step  4560 | Ep 6 | Macro-F1 0.4820 | kein Fortschritt 39/50
-  [gbert] Step  4600 | Ep 6 | Macro-F1 0.4756 | kein Fortschritt 40/50
-  [gbert] Step  4640 | Ep 6 | Macro-F1 0.4794 | kein Fortschritt 41/50
-  [gbert] Step  4680 | Ep 6 | Macro-F1 0.4753 | kein Fortschritt 42/50
-  [gbert] Step  4720 | Ep 6 | Macro-F1 0.4289 | kein Fortschritt 43/50
-  [gbert] Step  4760 | Ep 6 | Macro-F1 0.4990 | kein Fortschritt 44/50
-  [gbert] Step  4800 | Ep 6 | Macro-F1 0.4855 | kein Fortschritt 45/50
-  [gbert] Step  4840 | Ep 6 | Macro-F1 0.4773 | kein Fortschritt 46/50
-  [gbert] Step  4880 | Ep 6 | Macro-F1 0.4823 | kein Fortschritt 47/50
-  [gbert] Step  4920 | Ep 6 | Macro-F1 0.4575 | kein Fortschritt 48/50
-  [gbert] Step  4960 | Ep 6 | Macro-F1 0.4600 | kein Fortschritt 49/50
-  [gbert] Step  5000 | Ep 6 | Macro-F1 0.4576 | kein Fortschritt 50/50
-  [gbert] Early Stopping (beste Macro-F1: 0.5903)
+  [gbert] Step    40 | Ep 1 | Macro-F1 0.0714 | OK Bestes Modell
+  [gbert] Step    80 | Ep 1 | Macro-F1 0.2311 | OK Bestes Modell
+  [gbert] Step   120 | Ep 1 | Macro-F1 0.3073 | OK Bestes Modell
+  [gbert] Step   160 | Ep 1 | Macro-F1 0.2680 | kein Fortschritt 1/50
+  [gbert] Step   200 | Ep 1 | Macro-F1 0.3039 | kein Fortschritt 2/50
+  [gbert] Step   240 | Ep 1 | Macro-F1 0.3370 | OK Bestes Modell
+  [gbert] Step   280 | Ep 1 | Macro-F1 0.4166 | OK Bestes Modell
+  [gbert] Step   320 | Ep 1 | Macro-F1 0.4173 | OK Bestes Modell
+  [gbert] Step   360 | Ep 1 | Macro-F1 0.3591 | kein Fortschritt 1/50
+  [gbert] Step   400 | Ep 1 | Macro-F1 0.3969 | kein Fortschritt 2/50
+  [gbert] Step   440 | Ep 1 | Macro-F1 0.3695 | kein Fortschritt 3/50
+  [gbert] Step   480 | Ep 1 | Macro-F1 0.3731 | kein Fortschritt 4/50
+  [gbert] Step   520 | Ep 1 | Macro-F1 0.3753 | kein Fortschritt 5/50
+  [gbert] Step   560 | Ep 1 | Macro-F1 0.4331 | OK Bestes Modell
+  [gbert] Step   600 | Ep 1 | Macro-F1 0.4373 | OK Bestes Modell
+  [gbert] Step   640 | Ep 1 | Macro-F1 0.4725 | OK Bestes Modell
+  [gbert] Step   680 | Ep 1 | Macro-F1 0.4261 | kein Fortschritt 1/50
+  [gbert] Step   720 | Ep 1 | Macro-F1 0.4621 | kein Fortschritt 2/50
+  [gbert] Step   760 | Ep 1 | Macro-F1 0.4174 | kein Fortschritt 3/50
+  [gbert] Step   800 | Ep 1 | Macro-F1 0.4357 | kein Fortschritt 4/50
+  [gbert] Step   840 | Ep 1 | Macro-F1 0.4074 | kein Fortschritt 5/50
+  [gbert] Step   880 | Ep 1 | Macro-F1 0.4634 | kein Fortschritt 6/50
+  [gbert] Step   920 | Ep 1 | Macro-F1 0.4475 | kein Fortschritt 7/50
+  [gbert] Step   960 | Ep 2 | Macro-F1 0.4561 | kein Fortschritt 8/50
+  [gbert] Step  1000 | Ep 2 | Macro-F1 0.4304 | kein Fortschritt 9/50
+  [gbert] Step  1040 | Ep 2 | Macro-F1 0.4595 | kein Fortschritt 10/50
+  [gbert] Step  1080 | Ep 2 | Macro-F1 0.4555 | kein Fortschritt 11/50
+  [gbert] Step  1120 | Ep 2 | Macro-F1 0.5289 | OK Bestes Modell
+  [gbert] Step  1160 | Ep 2 | Macro-F1 0.5108 | kein Fortschritt 1/50
+  [gbert] Step  1200 | Ep 2 | Macro-F1 0.4627 | kein Fortschritt 2/50
+  [gbert] Step  1240 | Ep 2 | Macro-F1 0.4654 | kein Fortschritt 3/50
+  [gbert] Step  1280 | Ep 2 | Macro-F1 0.4430 | kein Fortschritt 4/50
+  [gbert] Step  1320 | Ep 2 | Macro-F1 0.4778 | kein Fortschritt 5/50
+  [gbert] Step  1360 | Ep 2 | Macro-F1 0.4811 | kein Fortschritt 6/50
+  [gbert] Step  1400 | Ep 2 | Macro-F1 0.4622 | kein Fortschritt 7/50
+  [gbert] Step  1440 | Ep 2 | Macro-F1 0.4538 | kein Fortschritt 8/50
+  [gbert] Step  1480 | Ep 2 | Macro-F1 0.4091 | kein Fortschritt 9/50
+  [gbert] Step  1520 | Ep 2 | Macro-F1 0.5167 | kein Fortschritt 10/50
+  [gbert] Step  1560 | Ep 2 | Macro-F1 0.5105 | kein Fortschritt 11/50
+  [gbert] Step  1600 | Ep 2 | Macro-F1 0.4788 | kein Fortschritt 12/50
+  [gbert] Step  1640 | Ep 2 | Macro-F1 0.5014 | kein Fortschritt 13/50
+  [gbert] Step  1680 | Ep 2 | Macro-F1 0.3531 | kein Fortschritt 14/50
+  [gbert] Step  1720 | Ep 2 | Macro-F1 0.4592 | kein Fortschritt 15/50
+  [gbert] Step  1760 | Ep 2 | Macro-F1 0.4748 | kein Fortschritt 16/50
+  [gbert] Step  1800 | Ep 2 | Macro-F1 0.4508 | kein Fortschritt 17/50
+  [gbert] Step  1840 | Ep 2 | Macro-F1 0.5193 | kein Fortschritt 18/50
+  [gbert] Step  1880 | Ep 3 | Macro-F1 0.4987 | kein Fortschritt 19/50
+  [gbert] Step  1920 | Ep 3 | Macro-F1 0.5118 | kein Fortschritt 20/50
+  [gbert] Step  1960 | Ep 3 | Macro-F1 0.4918 | kein Fortschritt 21/50
+  [gbert] Step  2000 | Ep 3 | Macro-F1 0.5097 | kein Fortschritt 22/50
+  [gbert] Step  2040 | Ep 3 | Macro-F1 0.4927 | kein Fortschritt 23/50
+  [gbert] Step  2080 | Ep 3 | Macro-F1 0.4829 | kein Fortschritt 24/50
+  [gbert] Step  2120 | Ep 3 | Macro-F1 0.4989 | kein Fortschritt 25/50
+  [gbert] Step  2160 | Ep 3 | Macro-F1 0.4684 | kein Fortschritt 26/50
+  [gbert] Step  2200 | Ep 3 | Macro-F1 0.4909 | kein Fortschritt 27/50
+  [gbert] Step  2240 | Ep 3 | Macro-F1 0.4816 | kein Fortschritt 28/50
+  [gbert] Step  2280 | Ep 3 | Macro-F1 0.5067 | kein Fortschritt 29/50
+  [gbert] Step  2320 | Ep 3 | Macro-F1 0.4805 | kein Fortschritt 30/50
+  [gbert] Step  2360 | Ep 3 | Macro-F1 0.4790 | kein Fortschritt 31/50
+  [gbert] Step  2400 | Ep 3 | Macro-F1 0.4367 | kein Fortschritt 32/50
+  [gbert] Step  2440 | Ep 3 | Macro-F1 0.4897 | kein Fortschritt 33/50
+  [gbert] Step  2480 | Ep 3 | Macro-F1 0.4884 | kein Fortschritt 34/50
+  [gbert] Step  2520 | Ep 3 | Macro-F1 0.4725 | kein Fortschritt 35/50
+  [gbert] Step  2560 | Ep 3 | Macro-F1 0.5093 | kein Fortschritt 36/50
+  [gbert] Step  2600 | Ep 3 | Macro-F1 0.5322 | OK Bestes Modell
+  [gbert] Step  2640 | Ep 3 | Macro-F1 0.4901 | kein Fortschritt 1/50
+  [gbert] Step  2680 | Ep 3 | Macro-F1 0.5011 | kein Fortschritt 2/50
+  [gbert] Step  2720 | Ep 3 | Macro-F1 0.5055 | kein Fortschritt 3/50
+  [gbert] Step  2760 | Ep 3 | Macro-F1 0.5092 | kein Fortschritt 4/50
+  [gbert] Step  2800 | Ep 4 | Macro-F1 0.5357 | OK Bestes Modell
+  [gbert] Step  2840 | Ep 4 | Macro-F1 0.4924 | kein Fortschritt 1/50
+  [gbert] Step  2880 | Ep 4 | Macro-F1 0.5048 | kein Fortschritt 2/50
+  [gbert] Step  2920 | Ep 4 | Macro-F1 0.4755 | kein Fortschritt 3/50
+  [gbert] Step  2960 | Ep 4 | Macro-F1 0.4863 | kein Fortschritt 4/50
+  [gbert] Step  3000 | Ep 4 | Macro-F1 0.4856 | kein Fortschritt 5/50
+  [gbert] Step  3040 | Ep 4 | Macro-F1 0.4895 | kein Fortschritt 6/50
+  [gbert] Step  3080 | Ep 4 | Macro-F1 0.5102 | kein Fortschritt 7/50
+  [gbert] Step  3120 | Ep 4 | Macro-F1 0.4850 | kein Fortschritt 8/50
+  [gbert] Step  3160 | Ep 4 | Macro-F1 0.4527 | kein Fortschritt 9/50
+  [gbert] Step  3200 | Ep 4 | Macro-F1 0.4627 | kein Fortschritt 10/50
+  [gbert] Step  3240 | Ep 4 | Macro-F1 0.5149 | kein Fortschritt 11/50
+  [gbert] Step  3280 | Ep 4 | Macro-F1 0.4914 | kein Fortschritt 12/50
+  [gbert] Step  3320 | Ep 4 | Macro-F1 0.4935 | kein Fortschritt 13/50
+  [gbert] Step  3360 | Ep 4 | Macro-F1 0.5135 | kein Fortschritt 14/50
+  [gbert] Step  3400 | Ep 4 | Macro-F1 0.5056 | kein Fortschritt 15/50
+  [gbert] Step  3440 | Ep 4 | Macro-F1 0.4928 | kein Fortschritt 16/50
+  [gbert] Step  3480 | Ep 4 | Macro-F1 0.5178 | kein Fortschritt 17/50
+  [gbert] Step  3520 | Ep 4 | Macro-F1 0.5079 | kein Fortschritt 18/50
+  [gbert] Step  3560 | Ep 4 | Macro-F1 0.4647 | kein Fortschritt 19/50
+  [gbert] Step  3600 | Ep 4 | Macro-F1 0.5188 | kein Fortschritt 20/50
+  [gbert] Step  3640 | Ep 4 | Macro-F1 0.5015 | kein Fortschritt 21/50
+  [gbert] Step  3680 | Ep 4 | Macro-F1 0.4890 | kein Fortschritt 22/50
+  [gbert] Step  3720 | Ep 5 | Macro-F1 0.4632 | kein Fortschritt 23/50
+  [gbert] Step  3760 | Ep 5 | Macro-F1 0.4876 | kein Fortschritt 24/50
+  [gbert] Step  3800 | Ep 5 | Macro-F1 0.4878 | kein Fortschritt 25/50
+  [gbert] Step  3840 | Ep 5 | Macro-F1 0.4708 | kein Fortschritt 26/50
+  [gbert] Step  3880 | Ep 5 | Macro-F1 0.4899 | kein Fortschritt 27/50
+  [gbert] Step  3920 | Ep 5 | Macro-F1 0.5106 | kein Fortschritt 28/50
+  [gbert] Step  3960 | Ep 5 | Macro-F1 0.5177 | kein Fortschritt 29/50
+  [gbert] Step  4000 | Ep 5 | Macro-F1 0.5047 | kein Fortschritt 30/50
+  [gbert] Step  4040 | Ep 5 | Macro-F1 0.5114 | kein Fortschritt 31/50
+  [gbert] Step  4080 | Ep 5 | Macro-F1 0.4966 | kein Fortschritt 32/50
+  [gbert] Step  4120 | Ep 5 | Macro-F1 0.4993 | kein Fortschritt 33/50
+  [gbert] Step  4160 | Ep 5 | Macro-F1 0.5305 | kein Fortschritt 34/50
+  [gbert] Step  4200 | Ep 5 | Macro-F1 0.5056 | kein Fortschritt 35/50
+  [gbert] Step  4240 | Ep 5 | Macro-F1 0.5013 | kein Fortschritt 36/50
+  [gbert] Step  4280 | Ep 5 | Macro-F1 0.5215 | kein Fortschritt 37/50
+  [gbert] Step  4320 | Ep 5 | Macro-F1 0.5016 | kein Fortschritt 38/50
+  [gbert] Step  4360 | Ep 5 | Macro-F1 0.4978 | kein Fortschritt 39/50
+  [gbert] Step  4400 | Ep 5 | Macro-F1 0.5104 | kein Fortschritt 40/50
+  [gbert] Step  4440 | Ep 5 | Macro-F1 0.5125 | kein Fortschritt 41/50
+  [gbert] Step  4480 | Ep 5 | Macro-F1 0.4709 | kein Fortschritt 42/50
+  [gbert] Step  4520 | Ep 5 | Macro-F1 0.5141 | kein Fortschritt 43/50
+  [gbert] Step  4560 | Ep 5 | Macro-F1 0.5302 | kein Fortschritt 44/50
+  [gbert] Step  4600 | Ep 5 | Macro-F1 0.5176 | kein Fortschritt 45/50
+  [gbert] Step  4640 | Ep 5 | Macro-F1 0.4687 | kein Fortschritt 46/50
+  [gbert] Step  4680 | Ep 6 | Macro-F1 0.4785 | kein Fortschritt 47/50
+  [gbert] Step  4720 | Ep 6 | Macro-F1 0.4809 | kein Fortschritt 48/50
+  [gbert] Step  4760 | Ep 6 | Macro-F1 0.4999 | kein Fortschritt 49/50
+  [gbert] Step  4800 | Ep 6 | Macro-F1 0.5081 | kein Fortschritt 50/50
+  [gbert] Early Stopping (beste Macro-F1: 0.5357)
 
   [gbert] Finaler Report:
               precision    recall  f1-score   support
 
-   agitation       0.62      0.36      0.45        14
-   criticism       0.66      0.67      0.67       184
-     nothing       0.95      0.96      0.95      1383
-  subversive       0.50      0.20      0.29         5
+   agitation       0.24      0.29      0.26        14
+   criticism       0.60      0.61      0.61       184
+     nothing       0.95      0.94      0.95      1383
+  subversive       0.23      0.60      0.33         5
 
-    accuracy                           0.92      1586
-   macro avg       0.68      0.55      0.59      1586
-weighted avg       0.91      0.92      0.91      1586
+    accuracy                           0.90      1586
+   macro avg       0.50      0.61      0.54      1586
+weighted avg       0.90      0.90      0.90      1586
 
 
 ─────────────────────────────────────────────────────────────────
@@ -188,91 +183,277 @@ weighted avg       0.91      0.92      0.91      1586
 /u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py:949: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
   warnings.warn(
   Training: max 10 Epochs | Eval alle 40 Steps | Patience 50
-  [xlmr] Step    40 | Ep 1 | Macro-F1 0.3053 | OK Bestes Modell
-  [xlmr] Step    80 | Ep 1 | Macro-F1 0.2024 | kein Fortschritt 1/50
-  [xlmr] Step   120 | Ep 1 | Macro-F1 0.2235 | kein Fortschritt 2/50
-  [xlmr] Step   160 | Ep 1 | Macro-F1 0.2262 | kein Fortschritt 3/50
-  [xlmr] Step   200 | Ep 1 | Macro-F1 0.3181 | OK Bestes Modell
-  [xlmr] Step   240 | Ep 1 | Macro-F1 0.2796 | kein Fortschritt 1/50
-  [xlmr] Step   280 | Ep 1 | Macro-F1 0.3457 | OK Bestes Modell
-  [xlmr] Step   320 | Ep 1 | Macro-F1 0.3783 | OK Bestes Modell
-  [xlmr] Step   360 | Ep 1 | Macro-F1 0.3700 | kein Fortschritt 1/50
-  [xlmr] Step   400 | Ep 1 | Macro-F1 0.3417 | kein Fortschritt 2/50
-  [xlmr] Step   440 | Ep 1 | Macro-F1 0.3412 | kein Fortschritt 3/50
-  [xlmr] Step   480 | Ep 1 | Macro-F1 0.3661 | kein Fortschritt 4/50
-  [xlmr] Step   520 | Ep 1 | Macro-F1 0.3706 | kein Fortschritt 5/50
-  [xlmr] Step   560 | Ep 1 | Macro-F1 0.3802 | OK Bestes Modell
-  [xlmr] Step   600 | Ep 1 | Macro-F1 0.3628 | kein Fortschritt 1/50
-  [xlmr] Step   640 | Ep 1 | Macro-F1 0.3337 | kein Fortschritt 2/50
-  [xlmr] Step   680 | Ep 1 | Macro-F1 0.3837 | OK Bestes Modell
-  [xlmr] Step   720 | Ep 1 | Macro-F1 0.3823 | kein Fortschritt 1/50
-  [xlmr] Step   760 | Ep 1 | Macro-F1 0.3549 | kein Fortschritt 2/50
-  [xlmr] Step   800 | Ep 1 | Macro-F1 0.3636 | kein Fortschritt 3/50
-  [xlmr] Step   840 | Ep 1 | Macro-F1 0.3788 | kein Fortschritt 4/50
-  [xlmr] Step   880 | Ep 1 | Macro-F1 0.3556 | kein Fortschritt 5/50
-  [xlmr] Step   920 | Ep 2 | Macro-F1 0.3638 | kein Fortschritt 6/50
-  [xlmr] Step   960 | Ep 2 | Macro-F1 0.3429 | kein Fortschritt 7/50
-  [xlmr] Step  1000 | Ep 2 | Macro-F1 0.3718 | kein Fortschritt 8/50
-  [xlmr] Step  1040 | Ep 2 | Macro-F1 0.3637 | kein Fortschritt 9/50
-  [xlmr] Step  1080 | Ep 2 | Macro-F1 0.3857 | OK Bestes Modell
-  [xlmr] Step  1120 | Ep 2 | Macro-F1 0.3824 | kein Fortschritt 1/50
-  [xlmr] Step  1160 | Ep 2 | Macro-F1 0.3765 | kein Fortschritt 2/50
-  [xlmr] Step  1200 | Ep 2 | Macro-F1 0.3830 | kein Fortschritt 3/50
-  [xlmr] Step  1240 | Ep 2 | Macro-F1 0.3890 | OK Bestes Modell
-  [xlmr] Step  1280 | Ep 2 | Macro-F1 0.3488 | kein Fortschritt 1/50
-  [xlmr] Step  1320 | Ep 2 | Macro-F1 0.4246 | OK Bestes Modell
-  [xlmr] Step  1360 | Ep 2 | Macro-F1 0.4391 | OK Bestes Modell
-  [xlmr] Step  1400 | Ep 2 | Macro-F1 0.3697 | kein Fortschritt 1/50
-  [xlmr] Step  1440 | Ep 2 | Macro-F1 0.4663 | OK Bestes Modell
-  [xlmr] Step  1480 | Ep 2 | Macro-F1 0.3737 | kein Fortschritt 1/50
-  [xlmr] Step  1520 | Ep 2 | Macro-F1 0.4571 | kein Fortschritt 2/50
-  [xlmr] Step  1560 | Ep 2 | Macro-F1 0.3655 | kein Fortschritt 3/50
-  [xlmr] Step  1600 | Ep 2 | Macro-F1 0.4152 | kein Fortschritt 4/50
-  [xlmr] Step  1640 | Ep 2 | Macro-F1 0.4283 | kein Fortschritt 5/50
-  [xlmr] Step  1680 | Ep 2 | Macro-F1 0.4554 | kein Fortschritt 6/50
-  [xlmr] Step  1720 | Ep 2 | Macro-F1 0.4703 | OK Bestes Modell
-  [xlmr] Step  1760 | Ep 2 | Macro-F1 0.4813 | OK Bestes Modell
-  [xlmr] Step  1800 | Ep 3 | Macro-F1 0.3761 | kein Fortschritt 1/50
-  [xlmr] Step  1840 | Ep 3 | Macro-F1 0.4396 | kein Fortschritt 2/50
-  [xlmr] Step  1880 | Ep 3 | Macro-F1 0.4299 | kein Fortschritt 3/50
-  [xlmr] Step  1920 | Ep 3 | Macro-F1 0.4470 | kein Fortschritt 4/50
-  [xlmr] Step  1960 | Ep 3 | Macro-F1 0.4761 | kein Fortschritt 5/50
-  [xlmr] Step  2000 | Ep 3 | Macro-F1 0.4553 | kein Fortschritt 6/50
-  [xlmr] Step  2040 | Ep 3 | Macro-F1 0.4671 | kein Fortschritt 7/50
-  [xlmr] Step  2080 | Ep 3 | Macro-F1 0.4687 | kein Fortschritt 8/50
-  [xlmr] Step  2120 | Ep 3 | Macro-F1 0.4728 | kein Fortschritt 9/50
-  [xlmr] Step  2160 | Ep 3 | Macro-F1 0.4373 | kein Fortschritt 10/50
-  [xlmr] Step  2200 | Ep 3 | Macro-F1 0.4880 | OK Bestes Modell
-  [xlmr] Step  2240 | Ep 3 | Macro-F1 0.4624 | kein Fortschritt 1/50
-  [xlmr] Step  2280 | Ep 3 | Macro-F1 0.4918 | OK Bestes Modell
-  [xlmr] Step  2320 | Ep 3 | Macro-F1 0.4974 | OK Bestes Modell
-  [xlmr] Step  2360 | Ep 3 | Macro-F1 0.4860 | kein Fortschritt 1/50
-  [xlmr] Step  2400 | Ep 3 | Macro-F1 0.4762 | kein Fortschritt 2/50
-  [xlmr] Step  2440 | Ep 3 | Macro-F1 0.4833 | kein Fortschritt 3/50
-  [xlmr] Step  2480 | Ep 3 | Macro-F1 0.4955 | kein Fortschritt 4/50
-  [xlmr] Step  2520 | Ep 3 | Macro-F1 0.4608 | kein Fortschritt 5/50
-  [xlmr] Step  2560 | Ep 3 | Macro-F1 0.4917 | kein Fortschritt 6/50
-  [xlmr] Step  2600 | Ep 3 | Macro-F1 0.4834 | kein Fortschritt 7/50
-  [xlmr] Step  2640 | Ep 3 | Macro-F1 0.4121 | kein Fortschritt 8/50
-  [xlmr] Step  2680 | Ep 4 | Macro-F1 0.4172 | kein Fortschritt 9/50
-  [xlmr] Step  2720 | Ep 4 | Macro-F1 0.4468 | kein Fortschritt 10/50
-  [xlmr] Step  2760 | Ep 4 | Macro-F1 0.4528 | kein Fortschritt 11/50
-  [xlmr] Step  2800 | Ep 4 | Macro-F1 0.4888 | kein Fortschritt 12/50
-  [xlmr] Step  2840 | Ep 4 | Macro-F1 0.4833 | kein Fortschritt 13/50
-  [xlmr] Step  2880 | Ep 4 | Macro-F1 0.4561 | kein Fortschritt 14/50
-  [xlmr] Step  2920 | Ep 4 | Macro-F1 0.4855 | kein Fortschritt 15/50
-  [xlmr] Step  2960 | Ep 4 | Macro-F1 0.4733 | kein Fortschritt 16/50
-  [xlmr] Step  3000 | Ep 4 | Macro-F1 0.4464 | kein Fortschritt 17/50
-  [xlmr] Step  3040 | Ep 4 | Macro-F1 0.4625 | kein Fortschritt 18/50
-  [xlmr] Step  3080 | Ep 4 | Macro-F1 0.4921 | kein Fortschritt 19/50
-  [xlmr] Step  3120 | Ep 4 | Macro-F1 0.4716 | kein Fortschritt 20/50
-  [xlmr] Step  3160 | Ep 4 | Macro-F1 0.4493 | kein Fortschritt 21/50
-  [xlmr] Step  3200 | Ep 4 | Macro-F1 0.3834 | kein Fortschritt 22/50
-  [xlmr] Step  3240 | Ep 4 | Macro-F1 0.4089 | kein Fortschritt 23/50
-  [xlmr] Step  3280 | Ep 4 | Macro-F1 0.3785 | kein Fortschritt 24/50
-  [xlmr] Step  3320 | Ep 4 | Macro-F1 0.4504 | kein Fortschritt 25/50
-  [xlmr] Step  3360 | Ep 4 | Macro-F1 0.4449 | kein Fortschritt 26/50
-  [xlmr] Step  3400 | Ep 4 | Macro-F1 0.4514 | kein Fortschritt 27/50
-  [xlmr] Step  3440 | Ep 4 | Macro-F1 0.4605 | kein Fortschritt 28/50
-  [xlmr] Step  3480 | Ep 4 | Macro-F1 0.4632 | kein Fortschritt 29/50
-  [xlmr] Step  3520 | Ep 4 | Macro-F1 0.5018 | OK Bestes Modell
+  [xlmr] Step    40 | Ep 1 | Macro-F1 0.0042 | OK Bestes Modell
+  [xlmr] Step    80 | Ep 1 | Macro-F1 0.0721 | OK Bestes Modell
+  [xlmr] Step   120 | Ep 1 | Macro-F1 0.2666 | OK Bestes Modell
+  [xlmr] Step   160 | Ep 1 | Macro-F1 0.0598 | kein Fortschritt 1/50
+  [xlmr] Step   200 | Ep 1 | Macro-F1 0.2371 | kein Fortschritt 2/50
+  [xlmr] Step   240 | Ep 1 | Macro-F1 0.3217 | OK Bestes Modell
+  [xlmr] Step   280 | Ep 1 | Macro-F1 0.0882 | kein Fortschritt 1/50
+  [xlmr] Step   320 | Ep 1 | Macro-F1 0.1463 | kein Fortschritt 2/50
+  [xlmr] Step   360 | Ep 1 | Macro-F1 0.1351 | kein Fortschritt 3/50
+  [xlmr] Step   400 | Ep 1 | Macro-F1 0.3113 | kein Fortschritt 4/50
+  [xlmr] Step   440 | Ep 1 | Macro-F1 0.3288 | OK Bestes Modell
+  [xlmr] Step   480 | Ep 1 | Macro-F1 0.0016 | kein Fortschritt 1/50
+  [xlmr] Step   520 | Ep 1 | Macro-F1 0.0016 | kein Fortschritt 2/50
+  [xlmr] Step   560 | Ep 1 | Macro-F1 0.0016 | kein Fortschritt 3/50
+  [xlmr] Step   600 | Ep 1 | Macro-F1 0.0016 | kein Fortschritt 4/50
+  [xlmr] Step   640 | Ep 1 | Macro-F1 0.2329 | kein Fortschritt 5/50
+  [xlmr] Step   680 | Ep 1 | Macro-F1 0.2329 | kein Fortschritt 6/50
+  [xlmr] Step   720 | Ep 1 | Macro-F1 0.0016 | kein Fortschritt 7/50
+  [xlmr] Step   760 | Ep 1 | Macro-F1 0.2329 | kein Fortschritt 8/50
+  [xlmr] Step   800 | Ep 1 | Macro-F1 0.0520 | kein Fortschritt 9/50
+  [xlmr] Step   840 | Ep 1 | Macro-F1 0.0520 | kein Fortschritt 10/50
+  [xlmr] Step   880 | Ep 1 | Macro-F1 0.2329 | kein Fortschritt 11/50
+  [xlmr] Step   920 | Ep 1 | Macro-F1 0.2329 | kein Fortschritt 12/50
+  [xlmr] Step   960 | Ep 2 | Macro-F1 0.0520 | kein Fortschritt 13/50
+  [xlmr] Step  1000 | Ep 2 | Macro-F1 0.2329 | kein Fortschritt 14/50
+  [xlmr] Step  1040 | Ep 2 | Macro-F1 0.2329 | kein Fortschritt 15/50
+  [xlmr] Step  1080 | Ep 2 | Macro-F1 0.0520 | kein Fortschritt 16/50
+  [xlmr] Step  1120 | Ep 2 | Macro-F1 0.2329 | kein Fortschritt 17/50
+  [xlmr] Step  1160 | Ep 2 | Macro-F1 0.2329 | kein Fortschritt 18/50
+  [xlmr] Step  1200 | Ep 2 | Macro-F1 0.2329 | kein Fortschritt 19/50
+  [xlmr] Step  1240 | Ep 2 | Macro-F1 0.2329 | kein Fortschritt 20/50
+  [xlmr] Step  1280 | Ep 2 | Macro-F1 0.2329 | kein Fortschritt 21/50
+  [xlmr] Step  1320 | Ep 2 | Macro-F1 0.2329 | kein Fortschritt 22/50
+  [xlmr] Step  1360 | Ep 2 | Macro-F1 0.2329 | kein Fortschritt 23/50
+  [xlmr] Step  1400 | Ep 2 | Macro-F1 0.2329 | kein Fortschritt 24/50
+  [xlmr] Step  1440 | Ep 2 | Macro-F1 0.0520 | kein Fortschritt 25/50
+  [xlmr] Step  1480 | Ep 2 | Macro-F1 0.2329 | kein Fortschritt 26/50
+  [xlmr] Step  1520 | Ep 2 | Macro-F1 0.0016 | kein Fortschritt 27/50
+  [xlmr] Step  1560 | Ep 2 | Macro-F1 0.2329 | kein Fortschritt 28/50
+  [xlmr] Step  1600 | Ep 2 | Macro-F1 0.2329 | kein Fortschritt 29/50
+  [xlmr] Step  1640 | Ep 2 | Macro-F1 0.2329 | kein Fortschritt 30/50
+  [xlmr] Step  1680 | Ep 2 | Macro-F1 0.2329 | kein Fortschritt 31/50
+  [xlmr] Step  1720 | Ep 2 | Macro-F1 0.2329 | kein Fortschritt 32/50
+  [xlmr] Step  1760 | Ep 2 | Macro-F1 0.2329 | kein Fortschritt 33/50
+  [xlmr] Step  1800 | Ep 2 | Macro-F1 0.2329 | kein Fortschritt 34/50
+  [xlmr] Step  1840 | Ep 2 | Macro-F1 0.2329 | kein Fortschritt 35/50
+  [xlmr] Step  1880 | Ep 3 | Macro-F1 0.2329 | kein Fortschritt 36/50
+  [xlmr] Step  1920 | Ep 3 | Macro-F1 0.0520 | kein Fortschritt 37/50
+  [xlmr] Step  1960 | Ep 3 | Macro-F1 0.2329 | kein Fortschritt 38/50
+  [xlmr] Step  2000 | Ep 3 | Macro-F1 0.2329 | kein Fortschritt 39/50
+  [xlmr] Step  2040 | Ep 3 | Macro-F1 0.2329 | kein Fortschritt 40/50
+  [xlmr] Step  2080 | Ep 3 | Macro-F1 0.2329 | kein Fortschritt 41/50
+  [xlmr] Step  2120 | Ep 3 | Macro-F1 0.2329 | kein Fortschritt 42/50
+  [xlmr] Step  2160 | Ep 3 | Macro-F1 0.2329 | kein Fortschritt 43/50
+  [xlmr] Step  2200 | Ep 3 | Macro-F1 0.2329 | kein Fortschritt 44/50
+  [xlmr] Step  2240 | Ep 3 | Macro-F1 0.2329 | kein Fortschritt 45/50
+  [xlmr] Step  2280 | Ep 3 | Macro-F1 0.2329 | kein Fortschritt 46/50
+  [xlmr] Step  2320 | Ep 3 | Macro-F1 0.2329 | kein Fortschritt 47/50
+  [xlmr] Step  2360 | Ep 3 | Macro-F1 0.0016 | kein Fortschritt 48/50
+  [xlmr] Step  2400 | Ep 3 | Macro-F1 0.2329 | kein Fortschritt 49/50
+  [xlmr] Step  2440 | Ep 3 | Macro-F1 0.0016 | kein Fortschritt 50/50
+  [xlmr] Early Stopping (beste Macro-F1: 0.3288)
+
+  [xlmr] Finaler Report:
+              precision    recall  f1-score   support
+
+   agitation       0.00      0.00      0.00        14
+   criticism       0.32      0.66      0.44       184
+     nothing       0.94      0.82      0.88      1383
+  subversive       0.00      0.00      0.00         5
+
+    accuracy                           0.79      1586
+   macro avg       0.32      0.37      0.33      1586
+weighted avg       0.86      0.79      0.82      1586
+
+
+─────────────────────────────────────────────────────────────────
+  Trainiere: microsoft/deberta-v3-base
+─────────────────────────────────────────────────────────────────
+/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py:949: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
+  warnings.warn(
+/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py:949: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
+  warnings.warn(
+  Training: max 10 Epochs | Eval alle 40 Steps | Patience 50
+  [deberta] Step    40 | Ep 1 | Macro-F1 0.2329 | OK Bestes Modell
+  [deberta] Step    80 | Ep 1 | Macro-F1 0.2329 | kein Fortschritt 1/50
+  [deberta] Step   120 | Ep 1 | Macro-F1 0.2357 | OK Bestes Modell
+  [deberta] Step   160 | Ep 1 | Macro-F1 0.3150 | OK Bestes Modell
+  [deberta] Step   200 | Ep 1 | Macro-F1 0.1605 | kein Fortschritt 1/50
+  [deberta] Step   240 | Ep 1 | Macro-F1 0.3087 | kein Fortschritt 2/50
+  [deberta] Step   280 | Ep 1 | Macro-F1 0.2834 | kein Fortschritt 3/50
+  [deberta] Step   320 | Ep 1 | Macro-F1 0.3242 | OK Bestes Modell
+  [deberta] Step   360 | Ep 1 | Macro-F1 0.3378 | OK Bestes Modell
+  [deberta] Step   400 | Ep 1 | Macro-F1 0.3385 | OK Bestes Modell
+  [deberta] Step   440 | Ep 1 | Macro-F1 0.4445 | OK Bestes Modell
+  [deberta] Step   480 | Ep 1 | Macro-F1 0.4107 | kein Fortschritt 1/50
+  [deberta] Step   520 | Ep 1 | Macro-F1 0.3310 | kein Fortschritt 2/50
+  [deberta] Step   560 | Ep 1 | Macro-F1 0.3103 | kein Fortschritt 3/50
+  [deberta] Step   600 | Ep 1 | Macro-F1 0.3432 | kein Fortschritt 4/50
+  [deberta] Step   640 | Ep 1 | Macro-F1 0.4047 | kein Fortschritt 5/50
+  [deberta] Step   680 | Ep 1 | Macro-F1 0.4564 | OK Bestes Modell
+  [deberta] Step   720 | Ep 1 | Macro-F1 0.4682 | OK Bestes Modell
+  [deberta] Step   760 | Ep 1 | Macro-F1 0.3472 | kein Fortschritt 1/50
+  [deberta] Step   800 | Ep 1 | Macro-F1 0.3559 | kein Fortschritt 2/50
+  [deberta] Step   840 | Ep 1 | Macro-F1 0.3943 | kein Fortschritt 3/50
+  [deberta] Step   880 | Ep 1 | Macro-F1 0.4008 | kein Fortschritt 4/50
+  [deberta] Step   920 | Ep 1 | Macro-F1 0.4074 | kein Fortschritt 5/50
+  [deberta] Step   960 | Ep 2 | Macro-F1 0.3988 | kein Fortschritt 6/50
+  [deberta] Step  1000 | Ep 2 | Macro-F1 0.4316 | kein Fortschritt 7/50
+  [deberta] Step  1040 | Ep 2 | Macro-F1 0.4320 | kein Fortschritt 8/50
+  [deberta] Step  1080 | Ep 2 | Macro-F1 0.4393 | kein Fortschritt 9/50
+  [deberta] Step  1120 | Ep 2 | Macro-F1 0.3542 | kein Fortschritt 10/50
+  [deberta] Step  1160 | Ep 2 | Macro-F1 0.3916 | kein Fortschritt 11/50
+  [deberta] Step  1200 | Ep 2 | Macro-F1 0.4329 | kein Fortschritt 12/50
+  [deberta] Step  1240 | Ep 2 | Macro-F1 0.4122 | kein Fortschritt 13/50
+  [deberta] Step  1280 | Ep 2 | Macro-F1 0.4333 | kein Fortschritt 14/50
+  [deberta] Step  1320 | Ep 2 | Macro-F1 0.3749 | kein Fortschritt 15/50
+  [deberta] Step  1360 | Ep 2 | Macro-F1 0.4599 | kein Fortschritt 16/50
+  [deberta] Step  1400 | Ep 2 | Macro-F1 0.4645 | kein Fortschritt 17/50
+  [deberta] Step  1440 | Ep 2 | Macro-F1 0.4207 | kein Fortschritt 18/50
+  [deberta] Step  1480 | Ep 2 | Macro-F1 0.4005 | kein Fortschritt 19/50
+  [deberta] Step  1520 | Ep 2 | Macro-F1 0.3687 | kein Fortschritt 20/50
+  [deberta] Step  1560 | Ep 2 | Macro-F1 0.4383 | kein Fortschritt 21/50
+  [deberta] Step  1600 | Ep 2 | Macro-F1 0.4246 | kein Fortschritt 22/50
+  [deberta] Step  1640 | Ep 2 | Macro-F1 0.4088 | kein Fortschritt 23/50
+  [deberta] Step  1680 | Ep 2 | Macro-F1 0.3774 | kein Fortschritt 24/50
+  [deberta] Step  1720 | Ep 2 | Macro-F1 0.4849 | OK Bestes Modell
+  [deberta] Step  1760 | Ep 2 | Macro-F1 0.4397 | kein Fortschritt 1/50
+  [deberta] Step  1800 | Ep 2 | Macro-F1 0.4225 | kein Fortschritt 2/50
+  [deberta] Step  1840 | Ep 2 | Macro-F1 0.4216 | kein Fortschritt 3/50
+  [deberta] Step  1880 | Ep 3 | Macro-F1 0.4334 | kein Fortschritt 4/50
+  [deberta] Step  1920 | Ep 3 | Macro-F1 0.4364 | kein Fortschritt 5/50
+  [deberta] Step  1960 | Ep 3 | Macro-F1 0.4437 | kein Fortschritt 6/50
+  [deberta] Step  2000 | Ep 3 | Macro-F1 0.4278 | kein Fortschritt 7/50
+  [deberta] Step  2040 | Ep 3 | Macro-F1 0.4164 | kein Fortschritt 8/50
+  [deberta] Step  2080 | Ep 3 | Macro-F1 0.4195 | kein Fortschritt 9/50
+  [deberta] Step  2120 | Ep 3 | Macro-F1 0.4487 | kein Fortschritt 10/50
+  [deberta] Step  2160 | Ep 3 | Macro-F1 0.4496 | kein Fortschritt 11/50
+  [deberta] Step  2200 | Ep 3 | Macro-F1 0.3750 | kein Fortschritt 12/50
+  [deberta] Step  2240 | Ep 3 | Macro-F1 0.4645 | kein Fortschritt 13/50
+  [deberta] Step  2280 | Ep 3 | Macro-F1 0.4584 | kein Fortschritt 14/50
+  [deberta] Step  2320 | Ep 3 | Macro-F1 0.4176 | kein Fortschritt 15/50
+  [deberta] Step  2360 | Ep 3 | Macro-F1 0.4195 | kein Fortschritt 16/50
+  [deberta] Step  2400 | Ep 3 | Macro-F1 0.4415 | kein Fortschritt 17/50
+  [deberta] Step  2440 | Ep 3 | Macro-F1 0.4146 | kein Fortschritt 18/50
+  [deberta] Step  2480 | Ep 3 | Macro-F1 0.4550 | kein Fortschritt 19/50
+  [deberta] Step  2520 | Ep 3 | Macro-F1 0.4473 | kein Fortschritt 20/50
+  [deberta] Step  2560 | Ep 3 | Macro-F1 0.4675 | kein Fortschritt 21/50
+  [deberta] Step  2600 | Ep 3 | Macro-F1 0.4278 | kein Fortschritt 22/50
+  [deberta] Step  2640 | Ep 3 | Macro-F1 0.4527 | kein Fortschritt 23/50
+  [deberta] Step  2680 | Ep 3 | Macro-F1 0.4926 | OK Bestes Modell
+  [deberta] Step  2720 | Ep 3 | Macro-F1 0.4004 | kein Fortschritt 1/50
+  [deberta] Step  2760 | Ep 3 | Macro-F1 0.4088 | kein Fortschritt 2/50
+  [deberta] Step  2800 | Ep 4 | Macro-F1 0.4647 | kein Fortschritt 3/50
+  [deberta] Step  2840 | Ep 4 | Macro-F1 0.4705 | kein Fortschritt 4/50
+  [deberta] Step  2880 | Ep 4 | Macro-F1 0.4432 | kein Fortschritt 5/50
+  [deberta] Step  2920 | Ep 4 | Macro-F1 0.5172 | OK Bestes Modell
+  [deberta] Step  2960 | Ep 4 | Macro-F1 0.4565 | kein Fortschritt 1/50
+  [deberta] Step  3000 | Ep 4 | Macro-F1 0.4276 | kein Fortschritt 2/50
+  [deberta] Step  3040 | Ep 4 | Macro-F1 0.4521 | kein Fortschritt 3/50
+  [deberta] Step  3080 | Ep 4 | Macro-F1 0.4040 | kein Fortschritt 4/50
+  [deberta] Step  3120 | Ep 4 | Macro-F1 0.4571 | kein Fortschritt 5/50
+  [deberta] Step  3160 | Ep 4 | Macro-F1 0.4613 | kein Fortschritt 6/50
+  [deberta] Step  3200 | Ep 4 | Macro-F1 0.4772 | kein Fortschritt 7/50
+  [deberta] Step  3240 | Ep 4 | Macro-F1 0.4395 | kein Fortschritt 8/50
+  [deberta] Step  3280 | Ep 4 | Macro-F1 0.4376 | kein Fortschritt 9/50
+  [deberta] Step  3320 | Ep 4 | Macro-F1 0.4023 | kein Fortschritt 10/50
+  [deberta] Step  3360 | Ep 4 | Macro-F1 0.4583 | kein Fortschritt 11/50
+  [deberta] Step  3400 | Ep 4 | Macro-F1 0.4553 | kein Fortschritt 12/50
+  [deberta] Step  3440 | Ep 4 | Macro-F1 0.4806 | kein Fortschritt 13/50
+  [deberta] Step  3480 | Ep 4 | Macro-F1 0.4702 | kein Fortschritt 14/50
+  [deberta] Step  3520 | Ep 4 | Macro-F1 0.4542 | kein Fortschritt 15/50
+  [deberta] Step  3560 | Ep 4 | Macro-F1 0.4417 | kein Fortschritt 16/50
+  [deberta] Step  3600 | Ep 4 | Macro-F1 0.4407 | kein Fortschritt 17/50
+  [deberta] Step  3640 | Ep 4 | Macro-F1 0.4396 | kein Fortschritt 18/50
+  [deberta] Step  3680 | Ep 4 | Macro-F1 0.4441 | kein Fortschritt 19/50
+  [deberta] Step  3720 | Ep 5 | Macro-F1 0.4155 | kein Fortschritt 20/50
+  [deberta] Step  3760 | Ep 5 | Macro-F1 0.4762 | kein Fortschritt 21/50
+  [deberta] Step  3800 | Ep 5 | Macro-F1 0.4804 | kein Fortschritt 22/50
+  [deberta] Step  3840 | Ep 5 | Macro-F1 0.4594 | kein Fortschritt 23/50
+  [deberta] Step  3880 | Ep 5 | Macro-F1 0.4635 | kein Fortschritt 24/50
+  [deberta] Step  3920 | Ep 5 | Macro-F1 0.4523 | kein Fortschritt 25/50
+  [deberta] Step  3960 | Ep 5 | Macro-F1 0.4632 | kein Fortschritt 26/50
+  [deberta] Step  4000 | Ep 5 | Macro-F1 0.4401 | kein Fortschritt 27/50
+  [deberta] Step  4040 | Ep 5 | Macro-F1 0.4283 | kein Fortschritt 28/50
+  [deberta] Step  4080 | Ep 5 | Macro-F1 0.4605 | kein Fortschritt 29/50
+  [deberta] Step  4120 | Ep 5 | Macro-F1 0.4445 | kein Fortschritt 30/50
+  [deberta] Step  4160 | Ep 5 | Macro-F1 0.4489 | kein Fortschritt 31/50
+  [deberta] Step  4200 | Ep 5 | Macro-F1 0.4467 | kein Fortschritt 32/50
+  [deberta] Step  4240 | Ep 5 | Macro-F1 0.4611 | kein Fortschritt 33/50
+  [deberta] Step  4280 | Ep 5 | Macro-F1 0.4431 | kein Fortschritt 34/50
+  [deberta] Step  4320 | Ep 5 | Macro-F1 0.4738 | kein Fortschritt 35/50
+  [deberta] Step  4360 | Ep 5 | Macro-F1 0.4723 | kein Fortschritt 36/50
+  [deberta] Step  4400 | Ep 5 | Macro-F1 0.4363 | kein Fortschritt 37/50
+  [deberta] Step  4440 | Ep 5 | Macro-F1 0.4641 | kein Fortschritt 38/50
+  [deberta] Step  4480 | Ep 5 | Macro-F1 0.4599 | kein Fortschritt 39/50
+  [deberta] Step  4520 | Ep 5 | Macro-F1 0.4624 | kein Fortschritt 40/50
+  [deberta] Step  4560 | Ep 5 | Macro-F1 0.4404 | kein Fortschritt 41/50
+  [deberta] Step  4600 | Ep 5 | Macro-F1 0.4410 | kein Fortschritt 42/50
+  [deberta] Step  4640 | Ep 5 | Macro-F1 0.4344 | kein Fortschritt 43/50
+  [deberta] Step  4680 | Ep 6 | Macro-F1 0.4226 | kein Fortschritt 44/50
+  [deberta] Step  4720 | Ep 6 | Macro-F1 0.4767 | kein Fortschritt 45/50
+  [deberta] Step  4760 | Ep 6 | Macro-F1 0.4547 | kein Fortschritt 46/50
+  [deberta] Step  4800 | Ep 6 | Macro-F1 0.4479 | kein Fortschritt 47/50
+  [deberta] Step  4840 | Ep 6 | Macro-F1 0.4466 | kein Fortschritt 48/50
+  [deberta] Step  4880 | Ep 6 | Macro-F1 0.4187 | kein Fortschritt 49/50
+  [deberta] Step  4920 | Ep 6 | Macro-F1 0.4514 | kein Fortschritt 50/50
+  [deberta] Early Stopping (beste Macro-F1: 0.5172)
+
+  [deberta] Finaler Report:
+              precision    recall  f1-score   support
+
+   agitation       0.36      0.29      0.32        14
+   criticism       0.57      0.63      0.60       184
+     nothing       0.95      0.93      0.94      1383
+  subversive       0.14      0.40      0.21         5
+
+    accuracy                           0.89      1586
+   macro avg       0.51      0.56      0.52      1586
+weighted avg       0.90      0.89      0.89      1586
+
+
+─────────────────────────────────────────────────────────────────
+  ENSEMBLE SOFT-VOTING (Val-Set)
+─────────────────────────────────────────────────────────────────
+
+  Ensemble Macro-F1 (Val): 0.53838
+
+  Einzelmodelle zum Vergleich:
+    gbert        Macro-F1: 0.53567
+    xlmr         Macro-F1: 0.32817
+    deberta      Macro-F1: 0.51722
+
+  Ensemble Classification Report:
+              precision    recall  f1-score   support
+
+   agitation       0.43      0.21      0.29        14
+   criticism       0.59      0.64      0.61       184
+     nothing       0.95      0.94      0.95      1383
+  subversive       0.25      0.40      0.31         5
+
+    accuracy                           0.90      1586
+   macro avg       0.55      0.55      0.54      1586
+weighted avg       0.90      0.90      0.90      1586
+
+
+─────────────────────────────────────────────────────────────────
+  TESTSET-VORHERSAGEN
+─────────────────────────────────────────────────────────────────
+  Lade gbert fuer Testvorhersage ...
+/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py:949: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
+  warnings.warn(
+  Lade xlmr fuer Testvorhersage ...
+  Lade deberta fuer Testvorhersage ...
+
+  Testvorhersagen gespeichert: model_dataset_gridsearch/all5_aug-generated/predictions_test.csv
+    nothing            856
+    criticism          120
+    agitation           17
+    subversive           6
+
+  Ergebnis angehaengt: /u/halle/ophe/home_at/Desktop/nlp/Sophie/results.csv
+
+=================================================================
+  ENSEMBLE-TRAINING ABGESCHLOSSEN
+=================================================================
+  Ensemble Macro-F1 (Val):  0.53838
+    gbert        0.53567
+    xlmr         0.32817
+    deberta      0.51722
+
+  Alle Dateien in: /u/halle/ophe/home_at/Desktop/nlp/Sophie/model_dataset_gridsearch/all5_aug-generated
+  predictions_test.csv | ensemble_config.json | results.csv
+

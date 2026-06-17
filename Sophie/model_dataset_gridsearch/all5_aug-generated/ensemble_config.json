@@ -3,11 +3,11 @@
   "test_file": "../data/preprocessed_data/test_minimal.csv",
   "paraphrase_file": "/u/halle/ophe/home_at/Desktop/nlp/data/synthethic_data/paraphrased.csv",
   "generated_file": "/u/halle/ophe/home_at/Desktop/nlp/data/synthethic_data/generated.csv",
-  "augmentation": "paraphrase",
+  "augmentation": "generated",
   "fourth_model_path": null,
   "fourth_model_base": "FacebookAI/xlm-roberta-large",
   "fourth_model_name": "mario",
-  "out_dir": "model_dataset_gridsearch/all5_aug-paraphrase",
+  "out_dir": "model_dataset_gridsearch/all5_aug-generated",
   "results_csv": "results.csv",
   "seed": 42,
   "max_length": 128,
@@ -39,44 +39,44 @@
     "nothing": 0.2868,
     "subversive": 74.3073
   },
-  "n_train": 14695,
+  "n_train": 14859,
   "n_val": 1586,
   "aug_files_used": [
-    "/u/halle/ophe/home_at/Desktop/nlp/data/synthethic_data/paraphrased.csv"
+    "/u/halle/ophe/home_at/Desktop/nlp/data/synthethic_data/generated.csv"
   ],
-  "ensemble_val_macro_f1": 0.76038,
+  "ensemble_val_macro_f1": 0.53838,
   "ensemble_per_class_f1": {
-    "agitation": 0.72727,
-    "criticism": 0.63612,
-    "nothing": 0.95087,
-    "subversive": 0.72727
+    "agitation": 0.28571,
+    "criticism": 0.61458,
+    "nothing": 0.94553,
+    "subversive": 0.30769
   },
   "individual_results": {
     "gbert": {
-      "val_macro_f1": 0.72766,
+      "val_macro_f1": 0.53567,
       "is_external": false,
-      "agitation": 0.72,
-      "criticism": 0.62431,
-      "nothing": 0.95094,
-      "subversive": 0.61538
+      "agitation": 0.25806,
+      "criticism": 0.60541,
+      "nothing": 0.94588,
+      "subversive": 0.33333
     },
     "xlmr": {
-      "val_macro_f1": 0.31492,
+      "val_macro_f1": 0.32817,
       "is_external": false,
       "agitation": 0.0,
-      "criticism": 0.36735,
-      "nothing": 0.89233,
+      "criticism": 0.43571,
+      "nothing": 0.87698,
       "subversive": 0.0
     },
     "deberta": {
-      "val_macro_f1": 0.73466,
+      "val_macro_f1": 0.51722,
       "is_external": false,
-      "agitation": 0.66667,
-      "criticism": 0.60104,
-      "nothing": 0.94366,
-      "subversive": 0.72727
+      "agitation": 0.32,
+      "criticism": 0.5964,
+      "nothing": 0.94195,
+      "subversive": 0.21053
     }
   },
   "device": "cuda",
-  "timestamp": "2026-06-11T19:34:16.844093"
+  "timestamp": "2026-06-11T20:26:57.969306"
 }
