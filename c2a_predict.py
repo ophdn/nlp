@@ -20,7 +20,7 @@ EXPECTED DBO DIR LAYOUT:
 
 OUTPUT:
     other_challenges/c2a/c2a_predictions.csv
-        id, prediction (TRUE/FALSE), prob_TRUE, dbo_class
+        id, prediction (TRUE/FALSE)
 """
 
 import argparse
@@ -45,6 +45,9 @@ parser.add_argument("--models",    nargs="+",
                     choices=["gbert", "gelectra", "mdeberta"])
 parser.add_argument("--batch_size", type=int,   default=32)
 parser.add_argument("--max_length", type=int,   default=128)
+parser.add_argument("--threshold",  type=float, default=0.5,
+                    help="Min combined prob(agitation+subversive) to predict TRUE. "
+                         "Lower = more sensitive (default: 0.5)")
 args = parser.parse_args()
 
 MODEL_REGISTRY = {
@@ -156,7 +159,8 @@ dbo_pred_labels = [DBO_CLASSES[i] for i in dbo_pred_idx]
 true_indices = [DBO_CLASSES.index(c) for c in TRUE_CLASSES]
 prob_true    = ensemble_probs[:, true_indices].sum(axis=1)
 
-c2a_labels = ["TRUE" if lbl in TRUE_CLASSES else "FALSE" for lbl in dbo_pred_labels]
+c2a_labels = ["TRUE" if p >= args.threshold else "FALSE" for p in prob_true]
+print(f"  Threshold: {args.threshold}  (lower = more TRUE predictions)")
 
 # ---------------------------------------------------------------------------
 # Save
@@ -164,8 +168,6 @@ c2a_labels = ["TRUE" if lbl in TRUE_CLASSES else "FALSE" for lbl in dbo_pred_lab
 out_df = pd.DataFrame({
     "id":         df["id"].values,
     "prediction": c2a_labels,
-    "prob_TRUE":  prob_true.round(4),
-    "dbo_class":  dbo_pred_labels,
 })
 Path(args.out_file).parent.mkdir(parents=True, exist_ok=True)
 out_df.to_csv(args.out_file, index=False, sep=";")
