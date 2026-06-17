@@ -21,8 +21,8 @@ python germeval2026_transfer.py \
 # DEF
 python germeval2026_transfer.py \
   --task        def \
-  --train_file  ../data/GermEval2026/data/def/def_train_26.csv \
-  --test_file   ../data/GermEval2026/data/def/def_test_26.csv \
+  --train_file  ../data/GermEval2026/data/def/def_train.csv \
+  --test_file   ../data/GermEval2026/data/def/def_test.csv \
   --source_run  model_dataset_gridsearch/all5_aug-paraphrase \
   --models      gbert mdeberta gelectra \
   --out_dir     transfer_runs/def
@@ -54,12 +54,12 @@ Traceback (most recent call last):
                        ~~~~~^^^
   File "/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/sklearn/utils/_encode.py", line 161, in __missing__
     raise KeyError(key)
-KeyError: np.str_('prospensity')
+KeyError: np.str_('False')
 
 During handling of the above exception, another exception occurred:
 
 Traceback (most recent call last):
-  File "/u/halle/ophe/home_at/Desktop/nlp/Sophie/germeval2026_transfer.py", line 198, in <module>
+  File "/u/halle/ophe/home_at/Desktop/nlp/Sophie/germeval2026_transfer.py", line 203, in <module>
     train_counts   = pd.Series(le.transform(df_train["label"])).value_counts().sort_index()
                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/sklearn/preprocessing/_label.py", line 144, in transform
@@ -67,4 +67,4 @@ Traceback (most recent call last):
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/sklearn/utils/_encode.py", line 231, in _encode
     raise ValueError(f"y contains previously unseen labels: {e}")
-ValueError: y contains previously unseen labels: np.str_('prospensity')
+ValueError: y contains previously unseen labels: np.str_('False')
