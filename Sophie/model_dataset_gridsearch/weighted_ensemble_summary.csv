@@ -1,0 +1,5 @@
+run,augmentation,models,uniform_macro,weighted_macro,delta,uniform_agitation,uniform_criticism,uniform_nothing,uniform_subversive,weighted_agitation,weighted_criticism,weighted_nothing,weighted_subversive
+all5_aug-paraphrase,paraphrase,gbert+xlmr+deberta,0.76038,0.76815,0.00777,0.72727,0.63612,0.95087,0.72727,0.74074,0.65241,0.95217,0.72727
+all5_aug-both,both,gbert+xlmr+deberta,0.69652,0.69706,0.00054,0.6087,0.61236,0.94964,0.61538,0.6087,0.61496,0.94919,0.61538
+all5_aug-none,none,gbert+xlmr+deberta,0.58932,0.57935,-0.00998,0.52632,0.63073,0.95025,0.25,0.52632,0.63978,0.95128,0.2
+all5_aug-generated,generated,gbert+xlmr+deberta,0.53838,0.57409,0.03571,0.28571,0.61458,0.94553,0.30769,0.4,0.61619,0.94683,0.33333

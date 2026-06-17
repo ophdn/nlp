@@ -1,0 +1,48 @@
+GermEval 2026 - Subtask 2: Weighted Ensemble Report
+─────────────────────────────────────────────────────────────────
+Timestamp:      2026-06-17 14:30
+Augmentierung:  paraphrase
+Modelle:        gbert, xlmr, deberta
+
+Gewichtungs-Matrix (Val-F1 pro Klasse pro Modell):
+  Modell         agitation   criticism     nothing  subversive
+  ───────────────────────────────────────────────────────
+  gbert              0.720       0.624       0.951       0.615
+  xlmr               0.000       0.367       0.892       0.000
+  deberta            0.667       0.601       0.944       0.727
+
+Ergebnisse (Val-Set):
+  Klasse           Uniform  Gewichtet    Delta
+  ─────────────────────────────────────────────
+  agitation        0.72727    0.74074 +0.01347
+  criticism        0.63612    0.65241 +0.01629
+  nothing          0.95087    0.95217 +0.00131
+  subversive       0.72727    0.72727 +0.00000
+  ─────────────────────────────────────────────
+  Macro-F1         0.76038    0.76815 +0.00777
+
+Uniform Ensemble Classification Report:
+              precision    recall  f1-score   support
+
+   agitation       1.00      0.57      0.73        14
+   criticism       0.63      0.64      0.64       184
+     nothing       0.95      0.95      0.95      1383
+  subversive       0.67      0.80      0.73         5
+
+    accuracy                           0.91      1586
+   macro avg       0.81      0.74      0.76      1586
+weighted avg       0.91      0.91      0.91      1586
+
+Gewichtetes Ensemble Classification Report:
+              precision    recall  f1-score   support
+
+   agitation       0.77      0.71      0.74        14
+   criticism       0.64      0.66      0.65       184
+     nothing       0.95      0.95      0.95      1383
+  subversive       0.67      0.80      0.73         5
+
+    accuracy                           0.91      1586
+   macro avg       0.76      0.78      0.77      1586
+weighted avg       0.92      0.91      0.91      1586
+
+─────────────────────────────────────────────────────────────────
