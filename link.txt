@@ -26,3 +26,45 @@ python germeval2026_transfer.py \
   --source_run  model_dataset_gridsearch/all5_aug-paraphrase \
   --models      gbert mdeberta gelectra \
   --out_dir     transfer_runs/def
+
+
+  =================================================================
+  Task:         VIO  (6 Klassen: ['call2violence', 'glorification', 'nothing', 'other', 'propensity', 'support'])
+  Modelle:      ['gbert', 'mdeberta', 'gelectra']
+  DBO-Run:      model_dataset_gridsearch/all5_aug-paraphrase
+  Device:       cuda
+  LR Encoder:   5e-06  |  LR Head: 2e-05
+  Freeze:       Encoder für erste 1 Epoch(s)
+  Max Epochs:   5  |  Patience: 30
+  Ausgabe:      /u/halle/ophe/home_at/Desktop/nlp/Sophie/transfer_runs/vio
+=================================================================
+
+  Preprocessing ...
+    16,431 Zeilen geladen und preprocesst (vio_train_26.csv)
+    4,108 Zeilen geladen und preprocesst (vio_test_26.csv)
+    4,108 Test-Tweets geladen.
+  Train: 14,787  |  Val: 1,644
+
+Traceback (most recent call last):
+  File "/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/sklearn/utils/_encode.py", line 229, in _encode
+    return _map_to_integer(values, uniques)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/sklearn/utils/_encode.py", line 168, in _map_to_integer
+    return xp.asarray([table[v] for v in values], device=device(values))
+                       ~~~~~^^^
+  File "/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/sklearn/utils/_encode.py", line 161, in __missing__
+    raise KeyError(key)
+KeyError: np.str_('prospensity')
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/u/halle/ophe/home_at/Desktop/nlp/Sophie/germeval2026_transfer.py", line 198, in <module>
+    train_counts   = pd.Series(le.transform(df_train["label"])).value_counts().sort_index()
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/sklearn/preprocessing/_label.py", line 144, in transform
+    return _encode(y, uniques=self.classes_)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/sklearn/utils/_encode.py", line 231, in _encode
+    raise ValueError(f"y contains previously unseen labels: {e}")
+ValueError: y contains previously unseen labels: np.str_('prospensity')
