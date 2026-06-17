@@ -1,22 +1,22 @@
 """
-C2A Prediction using DBO ensemble (all5_aug-both: gbert + xlmr + deberta)
-=========================================================================
+C2A Prediction using DBO ensemble (A8_trio: gbert + gelectra + mdeberta)
+========================================================================
 Runs the trained DBO ensemble on c2a_test_26.csv and maps
 the 4-class DBO output to TRUE/FALSE:
     agitation | subversive  ->  TRUE
     nothing   | criticism   ->  FALSE
 
 USAGE:
-    python c2a_predict.py --dbo_dir Sophie/model_dataset_gridsearch/all5_aug-both
+    python c2a_predict.py --dbo_dir path/to/A8_trio_run
 
     # Use only specific models:
-    python c2a_predict.py --dbo_dir Sophie/model_dataset_gridsearch/all5_aug-both --models gbert deberta
+    python c2a_predict.py --dbo_dir path/to/A8_trio_run --models gbert gelectra
 
 EXPECTED DBO DIR LAYOUT:
     <dbo_dir>/
         model_gbert/best_model_weights.pt
-        model_xlmr/best_model_weights.pt
-        model_deberta/best_model_weights.pt
+        model_gelectra/best_model_weights.pt
+        model_mdeberta/best_model_weights.pt
 
 OUTPUT:
     other_challenges/c2a/c2a_predictions.csv
@@ -41,16 +41,16 @@ parser.add_argument("--dbo_dir",   required=True,
 parser.add_argument("--test_file", default="other_challenges/c2a/c2a_test_26.csv")
 parser.add_argument("--out_file",  default="other_challenges/c2a/c2a_predictions.csv")
 parser.add_argument("--models",    nargs="+",
-                    default=["gbert", "xlmr", "deberta"],
-                    choices=["gbert", "xlmr", "deberta"])
+                    default=["gbert", "gelectra", "mdeberta"],
+                    choices=["gbert", "gelectra", "mdeberta"])
 parser.add_argument("--batch_size", type=int,   default=32)
 parser.add_argument("--max_length", type=int,   default=128)
 args = parser.parse_args()
 
 MODEL_REGISTRY = {
-    "gbert":   "deepset/gbert-large",
-    "xlmr":    "FacebookAI/xlm-roberta-large",
-    "deberta": "microsoft/deberta-v3-base",
+    "gbert":    "deepset/gbert-large",
+    "gelectra": "deepset/gelectra-large-germanquad",
+    "mdeberta": "microsoft/mdeberta-v3-base",
 }
 
 # DBO class order produced by sklearn LabelEncoder (alphabetical)
