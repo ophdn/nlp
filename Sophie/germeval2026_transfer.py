@@ -1,8 +1,8 @@
 """
-GermEval 2026 – Transfer Learning von DBO-Checkpoints
+GermEval 2026 – Transfer Learning von Quell-Checkpoints
 =======================================================
 Preprocesst die Rohdaten (identisch zu preprocessing.py) und fine-tuned
-mehrere Modelle vom DBO-Checkpoint auf einen anderen Subtask (c2a, vio, def).
+mehrere Modelle vom Quell-Checkpoint auf einen anderen Subtask (c2a, vio, def).
 
 GPU-Zeitersparnis:
   - Encoder bereits auf deutschen politischen Tweets eingestellt
@@ -16,7 +16,7 @@ VERWENDUNG:
         --task      c2a \\
         --train_file ../data/GermEval2026/data/c2a/c2a_train_26.csv \\
         --test_file  ../data/GermEval2026/data/c2a/c2a_test_26.csv \\
-        --dbo_run   model_dataset_gridsearch/all5_aug-paraphrase \\
+        --source_run   model_dataset_gridsearch/all5_aug-paraphrase \\
         --models    gbert mdeberta gelectra \\
         --out_dir   transfer_runs/c2a
 
@@ -24,7 +24,7 @@ VERWENDUNG:
     python germeval2026_transfer.py \\
         --task      vio \\
         --train_file ../data/GermEval2026/data/vio/vio_train_26.csv \\
-        --dbo_run   model_dataset_gridsearch/all5_aug-paraphrase \\
+        --source_run   model_dataset_gridsearch/all5_aug-paraphrase \\
         --models    mdeberta \\
         --out_dir   transfer_runs/vio
 """
@@ -118,12 +118,13 @@ parser.add_argument("--train_file",   required=True,
                     help="Rohe Trainings-CSV (z.B. c2a_train_26.csv)")
 parser.add_argument("--test_file",    default=None,
                     help="Rohe Test-CSV ohne Labels (optional, für direkte Prediction)")
-parser.add_argument("--dbo_run",      required=True,
-                    help="Ordner mit DBO-Checkpoints (z.B. model_dataset_gridsearch/all5_aug-paraphrase)")
+parser.add_argument("--source_run",   required=True,
+                    help="Ordner mit den Quell-Checkpoints (z.B. model_dataset_gridsearch/all5_aug-paraphrase)")
 parser.add_argument("--models",       nargs="+", default=["gbert", "mdeberta", "gelectra"],
                     choices=list(MODEL_REGISTRY),
                     help="Welche Modelle trainiert werden sollen")
-parser.add_argument("--out_dir",      default="transfer_runs/output")
+parser.add_argument("--out_dir",      required=True,
+                    help="Ausgabeverzeichnis (z.B. transfer_runs/c2a)")
 parser.add_argument("--results_csv",  default="results_transfer.csv")
 parser.add_argument("--seed",         type=int,   default=42)
 parser.add_argument("--max_length",   type=int,   default=128)
@@ -153,9 +154,9 @@ def set_seed(seed):
         torch.cuda.manual_seed_all(seed)
 
 set_seed(args.seed)
-DEVICE  = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-OUT     = Path(args.out_dir)
-DBO_RUN = Path(args.dbo_run)
+DEVICE     = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+OUT        = Path(args.out_dir)
+SOURCE_RUN = Path(args.source_run)
 OUT.mkdir(parents=True, exist_ok=True)
 
 CLASSES   = TASK_CONFIG[args.task]["classes"]
@@ -166,7 +167,7 @@ print(f"  GermEval 2026 – Transfer Learning")
 print(f"{'='*65}")
 print(f"  Task:         {args.task.upper()}  ({N_CLASSES} Klassen: {CLASSES})")
 print(f"  Modelle:      {args.models}")
-print(f"  DBO-Run:      {DBO_RUN}")
+print(f"  DBO-Run:      {SOURCE_RUN}")
 print(f"  Device:       {DEVICE}")
 print(f"  LR Encoder:   {args.lr_encoder}  |  LR Head: {args.lr_head}")
 print(f"  Freeze:       Encoder für erste {args.freeze_epochs} Epoch(s)")
@@ -254,13 +255,13 @@ class TransferClassifier(nn.Module):
 # ──────────────────────────────────────────────────────────────────────────────
 def train_model(model_key: str) -> dict:
     model_id  = MODEL_REGISTRY[model_key]
-    ckpt_path = DBO_RUN / f"model_{model_key}" / "best_model_weights.pt"
+    ckpt_path = SOURCE_RUN / f"model_{model_key}" / "best_model_weights.pt"
     model_out = OUT / f"model_{model_key}"
     model_out.mkdir(parents=True, exist_ok=True)
 
     print(f"\n{'─'*65}")
     print(f"  MODELL: {model_key.upper()}  ({model_id})")
-    print(f"  DBO-Checkpoint: {ckpt_path}")
+    print(f"  Quell-Checkpoint: {ckpt_path}")
     print(f"{'─'*65}")
 
     if not ckpt_path.exists():
@@ -279,8 +280,8 @@ def train_model(model_key: str) -> dict:
     print(f"  Lade Modell-Architektur ...")
     model = TransferClassifier(model_id, N_CLASSES, args.dropout).to(DEVICE)
 
-    # Encoder-Gewichte aus DBO-Checkpoint übernehmen
-    print(f"  Übertrage Encoder-Gewichte vom DBO-Checkpoint ...")
+    # Encoder-Gewichte aus Quell-Checkpoint übernehmen
+    print(f"  Übertrage Encoder-Gewichte vom Quell-Checkpoint ...")
     dbo_state = torch.load(ckpt_path, map_location=DEVICE, weights_only=False)
     if isinstance(dbo_state, dict) and "model_state" in dbo_state:
         dbo_state = dbo_state["model_state"]
@@ -434,7 +435,7 @@ def train_model(model_key: str) -> dict:
     (model_out / "final_report.txt").write_text(
         f"GermEval 2026 – Transfer Learning Report\n"
         f"Task: {args.task.upper()}  |  Modell: {model_key} ({model_id})\n"
-        f"DBO-Checkpoint: {ckpt_path}\n"
+        f"Quell-Checkpoint: {ckpt_path}\n"
         f"Trainingszeit: {elapsed/60:.1f} min  |  Early Stopped: {early_stop}\n\n"
         f"Beste Val Macro-F1: {best_f1:.5f}\n\n"
         f"{final_report}",
@@ -461,7 +462,7 @@ if all_results:
     results_path = Path(args.results_csv)
     existing     = pd.read_csv(results_path) if results_path.exists() else pd.DataFrame()
     rows         = [{**r, "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M"),
-                     "dbo_run": str(DBO_RUN)} for r in all_results]
+                     "source_run": str(SOURCE_RUN)} for r in all_results]
     pd.concat([existing, pd.DataFrame(rows)], ignore_index=True).to_csv(results_path, index=False)
 
     print(f"\n{'='*65}")
