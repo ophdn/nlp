@@ -49,14 +49,8 @@
     },
     {
       "name":         "all5_aug-targeted",
-      "notes":        "5-Modell Ensemble + gezielte Minority-Class Augmentierung (subversive+agitation, paraphrasebasiert, bereinigt)",
+      "notes":        "5-Modell Ensemble + gezielte Minority-Class Augmentierung (subversive+agitation, paraphrasebasiert, bereinigt, ohne generated.csv)",
       "augmentation": "generated",
-      "generated_file": "/u/halle/ophe/home_at/Desktop/nlp/data/synthethic_data/all_augmentation.csv"
-    },
-    {
-      "name":         "all5_aug-targeted-paraphrase",
-      "notes":        "5-Modell Ensemble + paraphrased.csv + all_augmentation.csv (maximale Augmentierung)",
-      "augmentation": "both",
       "generated_file": "/u/halle/ophe/home_at/Desktop/nlp/data/synthethic_data/all_augmentation.csv"
     }
   ]
