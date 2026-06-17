@@ -57,9 +57,11 @@ TASK_CONFIG = {
     "dbo": {"classes": ["agitation", "criticism", "nothing", "subversive"]},
 }
 
-# Tippfehler in den Rohdaten → korrekte Label-Schreibweise
+# Tippfehler und Schreibweise-Abweichungen in den Rohdaten → korrekte Label-Schreibweise
 LABEL_FIXES = {
-    "prospensity": "propensity",
+    "prospensity": "propensity",  # VIO: Tippfehler im Datensatz
+    "True":        "TRUE",        # C2A, DEF: Python-Casing statt Uppercase
+    "False":       "FALSE",       # C2A, DEF: Python-Casing statt Uppercase
 }
 
 MODEL_REGISTRY = {
@@ -102,7 +104,13 @@ def load_and_preprocess(path: Path, has_label: bool = True) -> pd.DataFrame:
         label_col = label_candidates[0] if label_candidates else \
             [c for c in df.columns if c != text_col][0]
         df = df[[text_col, label_col]].rename(columns={text_col: "text", label_col: "label"})
-        df["label"] = df["label"].astype(str).str.strip().replace(LABEL_FIXES)
+        df["label"] = df["label"].astype(str).str.strip().apply(lambda x: LABEL_FIXES.get(x, x))
+        valid_labels = set(TASK_CONFIG[args.task]["classes"])
+        invalid = ~df["label"].isin(valid_labels)
+        if invalid.any():
+            print(f"    WARNUNG: {invalid.sum()} Zeilen mit unbekannten Labels entfernt: "
+                  f"{df.loc[invalid, 'label'].value_counts().to_dict()}")
+            df = df[~invalid]
     else:
         id_candidates = [c for c in df.columns if c.lower() == "id"]
         id_col = id_candidates[0] if id_candidates else df.columns[0]
