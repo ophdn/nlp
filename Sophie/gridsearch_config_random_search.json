@@ -1,0 +1,138 @@
+{
+  "base_script": "germeval2026_ensemble_train.py",
+  "base_out_dir": "model_dataset_gridsearch",
+  "results_csv": "results.csv",
+  "global_args": {},
+  "runs": [
+    {
+      "name": "gbert_deb_rs_00",
+      "augmentation": "paraphrase",
+      "models": [
+        "gbert",
+        "deberta"
+      ],
+      "lr": 2.799e-05,
+      "batch_size": 8,
+      "warmup_steps": 300,
+      "dropout": 0.1112,
+      "notes": "random_search seed=42 run=0"
+    },
+    {
+      "name": "gbert_deb_rs_01",
+      "augmentation": "paraphrase",
+      "models": [
+        "gbert",
+        "deberta"
+      ],
+      "lr": 1.252e-05,
+      "batch_size": 8,
+      "warmup_steps": 1000,
+      "dropout": 0.0717,
+      "notes": "random_search seed=42 run=1"
+    },
+    {
+      "name": "gbert_deb_rs_02",
+      "augmentation": "paraphrase",
+      "models": [
+        "gbert",
+        "deberta"
+      ],
+      "lr": 1.972e-05,
+      "batch_size": 8,
+      "warmup_steps": 0,
+      "dropout": 0.1047,
+      "notes": "random_search seed=42 run=2"
+    },
+    {
+      "name": "gbert_deb_rs_03",
+      "augmentation": "paraphrase",
+      "models": [
+        "gbert",
+        "deberta"
+      ],
+      "lr": 2.255e-05,
+      "batch_size": 8,
+      "warmup_steps": 1000,
+      "dropout": 0.0997,
+      "notes": "random_search seed=42 run=3"
+    },
+    {
+      "name": "gbert_deb_rs_04",
+      "augmentation": "paraphrase",
+      "models": [
+        "gbert",
+        "deberta"
+      ],
+      "lr": 2.846e-05,
+      "batch_size": 32,
+      "warmup_steps": 500,
+      "dropout": 0.1051,
+      "notes": "random_search seed=42 run=4"
+    },
+    {
+      "name": "gbert_deb_rs_05",
+      "augmentation": "paraphrase",
+      "models": [
+        "gbert",
+        "deberta"
+      ],
+      "lr": 2.582e-05,
+      "batch_size": 8,
+      "warmup_steps": 100,
+      "dropout": 0.2245,
+      "notes": "random_search seed=42 run=5"
+    },
+    {
+      "name": "gbert_deb_rs_06",
+      "augmentation": "paraphrase",
+      "models": [
+        "gbert",
+        "deberta"
+      ],
+      "lr": 1.729e-05,
+      "batch_size": 8,
+      "warmup_steps": 100,
+      "dropout": 0.2893,
+      "notes": "random_search seed=42 run=6"
+    },
+    {
+      "name": "gbert_deb_rs_07",
+      "augmentation": "paraphrase",
+      "models": [
+        "gbert",
+        "deberta"
+      ],
+      "lr": 1.719e-05,
+      "batch_size": 8,
+      "warmup_steps": 500,
+      "dropout": 0.0742,
+      "notes": "random_search seed=42 run=7"
+    },
+    {
+      "name": "gbert_deb_rs_08",
+      "augmentation": "paraphrase",
+      "models": [
+        "gbert",
+        "deberta"
+      ],
+      "lr": 3.912e-05,
+      "batch_size": 32,
+      "warmup_steps": 300,
+      "dropout": 0.2518,
+      "notes": "random_search seed=42 run=8"
+    },
+    {
+      "name": "gbert_deb_rs_09",
+      "augmentation": "paraphrase",
+      "models": [
+        "gbert",
+        "deberta"
+      ],
+      "lr": 3.236e-05,
+      "batch_size": 32,
+      "warmup_steps": 0,
+      "dropout": 0.2933,
+      "notes": "random_search seed=42 run=9"
+    }
+  ]
+}
