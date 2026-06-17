@@ -75,9 +75,9 @@ parser.add_argument("--augmentation", default="none",
 
 # Modell-Auswahl
 parser.add_argument("--models", nargs="+",
-                    default=["gbert", "xlmr", "deberta"],
-                    choices=["gbert", "xlmr", "deberta"],
-                    help="Modelle fuer das Ensemble (default: alle drei)")
+                    default=["gbert", "xlmr", "deberta", "mdeberta", "gelectra"],
+                    choices=["gbert", "xlmr", "deberta", "mdeberta", "gelectra"],
+                    help="Modelle fuer das Ensemble (default: alle fuenf)")
 
 # 4. Modell (optional) - externer Checkpoint, wird NICHT neu trainiert
 parser.add_argument("--fourth_model_path", default=None,
@@ -109,7 +109,7 @@ parser.add_argument("--dropout",       type=float, default=0.1)
 args, _ = parser.parse_known_args()
 
 # ------------------------------------------------------------------------------
-# 2. Modell-Konfigurationen (die 3 trainierten Modelle)
+# 2. Modell-Konfigurationen
 # ------------------------------------------------------------------------------
 _ALL_MODEL_CONFIGS = {
     "gbert": {
@@ -123,6 +123,14 @@ _ALL_MODEL_CONFIGS = {
     "deberta": {
         "model_id":  "microsoft/deberta-v3-base",
         "shortname": "deberta",
+    },
+    "mdeberta": {
+        "model_id":  "microsoft/mdeberta-v3-base",
+        "shortname": "mdeberta",
+    },
+    "gelectra": {
+        "model_id":  "deepset/gelectra-large-germanquad",
+        "shortname": "gelectra",
     },
 }
 MODEL_CONFIGS = {k: v for k, v in _ALL_MODEL_CONFIGS.items() if k in args.models}
