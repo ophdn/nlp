@@ -51,7 +51,7 @@ for i in range(args.n):
     dropout      = rng.uniform(DROPOUT_MIN, DROPOUT_MAX)
 
     runs.append({
-        "name":         f"gbert_deb_rs_{i:02d}",
+        "name":         f"sprint2_rs_{i:02d}",
         "augmentation": args.augmentation,
         "models":       args.models,
         "lr":           round(lr, 8),
@@ -62,14 +62,16 @@ for i in range(args.n):
     })
 
 config = {
-    "base_script":   "Sophie/germeval2026_ensemble_train.py",
+    "base_script":   "Sophie/germeval2026_sprint2_train.py",
     "base_out_dir":  "model_dataset_gridsearch",
     "results_csv":   "results.csv",
     "global_args":   {
-        "train_file":      "preprocessed/train_minimal.csv",
-        "test_file":       "preprocessed/test_minimal.csv",
-        "paraphrase_file": "synthethic_data/paraphrased.csv",
-        "generated_file":  "preprocessed/synthetic_data.csv",
+        "train_file":           "preprocessed/train_minimal.csv",
+        "test_file":            "preprocessed/test_minimal.csv",
+        "paraphrase_file":      "synthethic_data/paraphrased.csv",
+        "generated_file":       "preprocessed/synthetic_data.csv",
+        "threshold_agitation":  0.45,
+        "threshold_subversive": 0.45,
     },
     "runs":          runs,
 }
