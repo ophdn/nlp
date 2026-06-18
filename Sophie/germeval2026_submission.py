@@ -32,11 +32,11 @@ from transformers import AutoModel, AutoTokenizer
 # CLI
 # ──────────────────────────────────────────────────────────────────────────────
 parser = argparse.ArgumentParser(description="GermEval 2026 – Submission")
-parser.add_argument("--team",       default="TUMination",
+parser.add_argument("--team",       default="DetecTUM",
                     help="Teamname (wie auf Codabench registriert)")
-parser.add_argument("--run",        default="1",
+parser.add_argument("--run",        default="2",
                     help="Run-Nummer: 1, 2 oder 3 (max. 3 Submissions erlaubt)")
-parser.add_argument("--base_dir",   default="model_dataset_gridsearch",
+parser.add_argument("--base_dir",   default="final_runs_scratch",
                     help="Ordner mit den trainierten Run-Unterordnern")
 parser.add_argument("--train_file", default=None,
                     help="Trainingsdatei für LabelEncoder (CSV mit 'text'+'label' "
@@ -45,7 +45,7 @@ parser.add_argument("--train_file", default=None,
 parser.add_argument("--test_file",  default=None,
                     help="Pfad zur dbo_test_26.csv. "
                          "Default: wird relativ zum Skript gesucht.")
-parser.add_argument("--out_dir",    default="submissions",
+parser.add_argument("--out_dir",    default="submissions/c2a",
                     help="Ausgabeverzeichnis für CSV und ZIP")
 args = parser.parse_args()
 
@@ -57,17 +57,18 @@ TEAM     = args.team
 RUN      = args.run
 CSV_NAME = f"{TEAM}{RUN}_dbo.csv"
 ZIP_NAME = f"{TEAM}{RUN}.zip"
+RUN = "c2a"
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Ensemble-Konfiguration A8_trio_mde_gel_gbert_uni  (Val-Macro-F1: 0.80040)
 # ──────────────────────────────────────────────────────────────────────────────
 ENSEMBLE = [
-    ("mdeberta", "microsoft/mdeberta-v3-base",        "all5_aug-paraphrase"),
-    ("gelectra", "deepset/gelectra-large-germanquad", "all5_aug-paraphrase"),
-    ("gbert",    "deepset/gbert-large",               "all5_aug-paraphrase"),
+    ("mdeberta", "microsoft/mdeberta-v3-base",        RUN),
+    ("gelectra", "deepset/gelectra-large-germanquad", RUN),
+    ("gbert",    "deepset/gbert-large",               RUN),
 ]
 
-CLASSES    = ["agitation", "criticism", "nothing", "subversive"]  # alphabetisch = LabelEncoder
+CLASSES    = ["TRUE", "FALSE"]  # alphabetisch = LabelEncoder
 MAX_LENGTH = 128
 BATCH_SIZE = 16
 DROPOUT    = 0.1
@@ -125,6 +126,7 @@ def load_test_data(test_file: Path) -> pd.DataFrame:
         {"sep": ";", "engine": "python"},
     ]:
         try:
+            test_file = args.test_file
             df = pd.read_csv(test_file, **kwargs)
             if "id" in df.columns and "description" in df.columns:
                 return df[["id", "description"]].dropna(subset=["description"])
@@ -136,10 +138,10 @@ def load_test_data(test_file: Path) -> pd.DataFrame:
 def load_train_labels(train_file: Path) -> list:
     """Liest Trainingsdaten und gibt alle Label-Werte zurück (für LabelEncoder)."""
     for kwargs, label_col in [
-        ({"sep": ";"}, "dbo"),
+        ({"sep": ";"}, "c"),
         ({},           "label"),
         ({"sep": ";"}, "label"),
-        ({},           "dbo"),
+        ({},           RUN),
     ]:
         try:
             df = pd.read_csv(train_file, **kwargs)
@@ -152,44 +154,7 @@ def load_train_labels(train_file: Path) -> list:
     return CLASSES * 10
 
 
-def find_test_file() -> Path:
-    """Sucht dbo_test_26.csv an bekannten Stellen."""
-    candidates = [
-        Path(args.test_file) if args.test_file else None,
-        Path(__file__).parent / "../data/GermEval2026/data/dbo/dbo_test_26.csv",
-        Path(__file__).parent / "../data/preprocessed_data/test_minimal.csv",
-        BASE_DIR / "../data/GermEval2026/data/dbo/dbo_test_26.csv",
-    ]
-    for p in candidates:
-        if p and p.exists():
-            return p.resolve()
-    raise FileNotFoundError(
-        "dbo_test_26.csv nicht gefunden. Bitte --test_file angeben.\n"
-        f"Gesucht in: {[str(p) for p in candidates if p]}"
-    )
 
-
-def find_train_file() -> Path:
-    """Sucht Trainingsdaten für den LabelEncoder."""
-    cfg_path = BASE_DIR / "all5_aug-paraphrase" / "ensemble_config.json"
-    if cfg_path.exists():
-        with open(cfg_path, encoding="utf-8") as f:
-            cfg = json.load(f)
-        # Pfad aus Config (relativ zum Skript-Verzeichnis)
-        rel = Path(__file__).parent / cfg["train_file"]
-        if rel.exists():
-            return rel.resolve()
-
-    candidates = [
-        Path(args.train_file) if args.train_file else None,
-        Path(__file__).parent / "../data/preprocessed_data/train_minimal.csv",
-        Path(__file__).parent / "../data/GermEval2026/data/dbo/dbo_train_26.csv",
-        BASE_DIR / "../data/GermEval2026/data/dbo/dbo_train_26.csv",
-    ]
-    for p in candidates:
-        if p and p.exists():
-            return p.resolve()
-    return None
 
 
 @torch.no_grad()
@@ -224,7 +189,7 @@ print(f"  Ausgabe:   {OUT_DIR / ZIP_NAME}")
 print(f"{'='*70}\n")
 
 # 1. Testdaten laden
-test_path = find_test_file()
+test_path = args.test_file
 print(f"  Testdaten: {test_path}")
 df_test   = load_test_data(test_path)
 test_ids  = df_test["id"].astype(str).tolist()
@@ -232,7 +197,7 @@ test_texts = df_test["description"].tolist()
 print(f"  {len(test_texts)} Test-Tweets geladen.\n")
 
 # 2. LabelEncoder aufbauen (Klassen-Reihenfolge muss mit Training übereinstimmen)
-train_path = find_train_file()
+train_path = args.train_file
 if train_path:
     print(f"  Trainingsdaten für LabelEncoder: {train_path}")
     labels_for_le = load_train_labels(train_path)
@@ -297,7 +262,7 @@ print(f"  SUBMISSION-DATEIEN")
 print(f"{SEP}")
 
 csv_path = OUT_DIR / CSV_NAME
-df_out   = pd.DataFrame({"id": test_ids, "dbo": pred_labels})
+df_out   = pd.DataFrame({"id": test_ids, RUN: pred_labels})
 df_out.to_csv(csv_path, sep=";", index=False)
 print(f"\n  CSV gespeichert: {csv_path}")
 print(f"  Vorschau:")
