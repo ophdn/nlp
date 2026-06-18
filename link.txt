@@ -40,31 +40,25 @@ python germeval2026_transfer.py \
 =================================================================
 
   Preprocessing ...
-    16,431 Zeilen geladen und preprocesst (vio_train_26.csv)
-    4,108 Zeilen geladen und preprocesst (vio_test_26.csv)
-    4,108 Test-Tweets geladen.
-  Train: 14,787  |  Val: 1,644
-
 Traceback (most recent call last):
-  File "/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/sklearn/utils/_encode.py", line 229, in _encode
-    return _map_to_integer(values, uniques)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/sklearn/utils/_encode.py", line 168, in _map_to_integer
-    return xp.asarray([table[v] for v in values], device=device(values))
-                       ~~~~~^^^
-  File "/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/sklearn/utils/_encode.py", line 161, in __missing__
-    raise KeyError(key)
-KeyError: np.str_('False')
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/u/halle/ophe/home_at/Desktop/nlp/Sophie/germeval2026_transfer.py", line 203, in <module>
-    train_counts   = pd.Series(le.transform(df_train["label"])).value_counts().sort_index()
-                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/sklearn/preprocessing/_label.py", line 144, in transform
-    return _encode(y, uniques=self.classes_)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/sklearn/utils/_encode.py", line 231, in _encode
-    raise ValueError(f"y contains previously unseen labels: {e}")
-ValueError: y contains previously unseen labels: np.str_('False')
+  File "/u/halle/ophe/home_at/Desktop/nlp/Sophie/germeval2026_finalize.py", line 269, in <module>
+    df_train_raw = load_and_preprocess(Path(args.train_file), args.task, has_label=True)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/u/halle/ophe/home_at/Desktop/nlp/Sophie/germeval2026_finalize.py", line 138, in load_and_preprocess
+    df = pd.read_csv(path, sep=None, engine="python", on_bad_lines="warn")
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 873, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 300, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1645, in __init__
+    self._engine = self._make_engine(f, self.engine)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1904, in _make_engine
+    self.handles = get_handle(
+                   ^^^^^^^^^^^
+  File "/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/pandas/io/common.py", line 930, in get_handle
+    handle = open(
+             ^^^^^
