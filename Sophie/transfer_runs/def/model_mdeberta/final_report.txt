@@ -1,0 +1,15 @@
+GermEval 2026 – Transfer Learning Report
+Task: DEF  |  Modell: mdeberta (microsoft/mdeberta-v3-base)
+Quell-Checkpoint: model_dataset_gridsearch/all5_aug-paraphrase/model_mdeberta/best_model_weights.pt
+Trainingszeit: 2.6 min  |  Early Stopped: False
+
+Beste Val Macro-F1: 0.67837
+
+              precision    recall  f1-score   support
+
+       FALSE       0.93      0.86      0.89       285
+        TRUE       0.38      0.60      0.46        42
+
+    accuracy                           0.82       327
+   macro avg       0.66      0.73      0.68       327
+weighted avg       0.86      0.82      0.84       327

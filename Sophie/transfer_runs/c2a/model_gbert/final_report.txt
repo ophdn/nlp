@@ -1,0 +1,15 @@
+GermEval 2026 – Transfer Learning Report
+Task: C2A  |  Modell: gbert (deepset/gbert-large)
+Quell-Checkpoint: model_dataset_gridsearch/all5_aug-paraphrase/model_gbert/best_model_weights.pt
+Trainingszeit: 22.8 min  |  Early Stopped: True
+
+Beste Val Macro-F1: 0.83239
+
+              precision    recall  f1-score   support
+
+       FALSE       0.96      0.98      0.97      1440
+        TRUE       0.77      0.63      0.69       143
+
+    accuracy                           0.95      1583
+   macro avg       0.87      0.81      0.83      1583
+weighted avg       0.95      0.95      0.95      1583

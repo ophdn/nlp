@@ -1,0 +1,19 @@
+GermEval 2026 – Transfer Learning Report
+Task: VIO  |  Modell: gbert (deepset/gbert-large)
+Quell-Checkpoint: model_dataset_gridsearch/all5_aug-paraphrase/model_gbert/best_model_weights.pt
+Trainingszeit: 24.5 min  |  Early Stopped: False
+
+Beste Val Macro-F1: 0.40037
+
+               precision    recall  f1-score   support
+
+call2violence       0.52      0.60      0.56        20
+glorification       0.00      0.00      0.00         3
+      nothing       0.98      0.99      0.99      1591
+        other       0.14      0.08      0.10        13
+   propensity       0.29      0.29      0.29         7
+      support       0.57      0.40      0.47        10
+
+     accuracy                           0.97      1644
+    macro avg       0.42      0.39      0.40      1644
+ weighted avg       0.97      0.97      0.97      1644

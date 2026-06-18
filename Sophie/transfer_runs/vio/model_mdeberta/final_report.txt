@@ -1,0 +1,19 @@
+GermEval 2026 – Transfer Learning Report
+Task: VIO  |  Modell: mdeberta (microsoft/mdeberta-v3-base)
+Quell-Checkpoint: model_dataset_gridsearch/all5_aug-paraphrase/model_mdeberta/best_model_weights.pt
+Trainingszeit: 12.1 min  |  Early Stopped: True
+
+Beste Val Macro-F1: 0.29658
+
+               precision    recall  f1-score   support
+
+call2violence       0.45      0.45      0.45        20
+glorification       0.00      0.00      0.00         3
+      nothing       0.98      1.00      0.99      1591
+        other       1.00      0.08      0.14        13
+   propensity       0.33      0.14      0.20         7
+      support       0.00      0.00      0.00        10
+
+     accuracy                           0.97      1644
+    macro avg       0.46      0.28      0.30      1644
+ weighted avg       0.96      0.97      0.96      1644
