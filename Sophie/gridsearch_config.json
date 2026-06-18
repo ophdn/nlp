@@ -58,6 +58,13 @@
       "notes":        "5-Modell Ensemble + gezielte Minority-Class Augmentierung (subversive+agitation, paraphrasebasiert, bereinigt, mit generated.csv)",
       "augmentation": "generated",
       "generated_file": "/u/halle/ophe/home_at/Desktop/nlp/data/synthethic_data/all_augmentation_gen.csv"
+    },
+    {
+      "name":                 "A8_trio_final_submission",
+      "notes":                "Finales Submission-Modell: bestes Ensemble A8_trio_mde_gel_gbert_uni (mdeberta+gelectra+gbert), trainiert auf Train + komplette Augmentierung + Testdaten. Vorhersagen dieses Modells werden abgegeben.",
+      "models":               ["mdeberta", "gelectra", "gbert"],
+      "augmentation":         "both",
+      "include_test_in_train": true
     }
   ]
 }

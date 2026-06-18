@@ -106,6 +106,13 @@ parser.add_argument("--patience",      type=int,   default=50)
 parser.add_argument("--val_size",      type=float, default=0.1)
 parser.add_argument("--dropout",       type=float, default=0.1)
 
+# Finales Submission-Training: zusaetzlich die Testdaten ins Training nehmen.
+# (Nur sinnvoll, wenn die Testdaten gelabelt sind und das Modell danach fuer
+#  die Abgabe genutzt wird - die Val-Metriken sind dann nicht mehr aussagekraeftig.)
+parser.add_argument("--include_test_in_train", action="store_true",
+                    help="Testdaten zusaetzlich zu Train + Augmentierung ins Training nehmen "
+                         "(fuer das finale Submission-Modell).")
+
 args, _ = parser.parse_known_args()
 
 # ------------------------------------------------------------------------------
@@ -136,7 +143,13 @@ _ALL_MODEL_CONFIGS = {
         "shortname": "gelectra",
     },
 }
-MODEL_CONFIGS = {k: v for k, v in _ALL_MODEL_CONFIGS.items() if k in args.models}
+# Trainings-Reihenfolge: zuerst die drei Modelle des besten Ensembles
+# A8_trio_mde_gel_gbert_uni (mdeberta, gelectra, gbert), dann der Rest.
+# So sind die wichtigsten Checkpoints zuerst fertig, falls ein Run abbricht.
+_TRAIN_ORDER = ["mdeberta", "gelectra", "gbert", "deberta", "xlmr"]
+_ordered_keys = ([k for k in _TRAIN_ORDER if k in args.models]
+                 + [k for k in args.models if k not in _TRAIN_ORDER])
+MODEL_CONFIGS = {k: _ALL_MODEL_CONFIGS[k] for k in _ordered_keys if k in _ALL_MODEL_CONFIGS}
 
 # ------------------------------------------------------------------------------
 # 3. Setup
@@ -255,9 +268,27 @@ aug_extra = pd.concat(
     [p for p in [df_para, df_gen] if len(p) > 0], ignore_index=True
 ) if aug_files_used else pd.DataFrame(columns=["text", "label"])
 
-df_train = pd.concat([df_train_base, aug_extra], ignore_index=True).sample(
-    frac=1, random_state=args.seed
-).reset_index(drop=True)
+# Optional: gelabelte Testdaten zusaetzlich ins Training (finales Submission-Modell)
+test_in_train = pd.DataFrame(columns=["text", "label"])
+USE_TEST_IN_TRAIN = False
+if args.include_test_in_train:
+    if len(df_test) > 0 and "label" in df_test.columns and df_test["label"].notna().any():
+        test_in_train = df_test[["text", "label"]].dropna()
+        # nur Zeilen mit bekannten Labels behalten (sonst bricht der LabelEncoder)
+        known = set(df_main["label"].unique())
+        before = len(test_in_train)
+        test_in_train = test_in_train[test_in_train["label"].isin(known)]
+        USE_TEST_IN_TRAIN = len(test_in_train) > 0
+        dropped = before - len(test_in_train)
+        print(f"\n  include_test_in_train: {len(test_in_train):,} Testzeilen ins Training "
+              f"({dropped} ohne gueltiges Label verworfen)")
+    else:
+        print(f"\n  include_test_in_train gesetzt, aber Testdaten haben keine Labels "
+              f"- werden NICHT ins Training genommen.")
+
+df_train = pd.concat(
+    [df_train_base, aug_extra, test_in_train], ignore_index=True
+).sample(frac=1, random_state=args.seed).reset_index(drop=True)
 
 print(f"\n  Trainingsdaten nach Augmentierung (ohne Val-Set):")
 for lbl, cnt in df_train["label"].value_counts().items():
@@ -265,7 +296,9 @@ for lbl, cnt in df_train["label"].value_counts().items():
     pct = cnt / len(df_train) * 100
     print(f"    {lbl:<15} {cnt:>6,}  ({pct:5.1f}%)  {bar}")
 
-print(f"\n  Train: {len(df_train):,}  |  Val: {len(df_val):,}  (Val-Set enthaelt keine augmentierten Daten)")
+print(f"\n  Train: {len(df_train):,}  |  Val: {len(df_val):,}  "
+      f"(Basis: {len(df_train_base):,} + Aug: {len(aug_extra):,} + Test: {len(test_in_train):,})")
+print(f"  (Val-Set stammt ausschliesslich aus den Hauptdaten - keine Aug-/Testdaten)")
 
 # Label-Encoder
 le = LabelEncoder()
@@ -347,12 +380,77 @@ class TransformerClassifier(nn.Module):
 # ------------------------------------------------------------------------------
 # 7. Training eines einzelnen Modells
 # ------------------------------------------------------------------------------
+def evaluate_existing_checkpoint(cfg, best_weights_path):
+    """
+    Laedt ein bereits trainiertes Modell aus <out_dir> und evaluiert es auf dem
+    Val-Set, OHNE neu zu trainieren. Wird verwendet, wenn der Checkpoint schon
+    existiert. Gibt dasselbe Dict-Format zurueck wie train_single_model().
+    """
+    model_id  = cfg["model_id"]
+    shortname = cfg["shortname"]
+
+    print(f"\n{'─'*65}")
+    print(f"  Checkpoint vorhanden - ueberspringe Training: {model_id}")
+    print(f"  Gefunden: {best_weights_path}")
+    print(f"{'─'*65}")
+
+    tokenizer = AutoTokenizer.from_pretrained(model_id, use_fast=False)
+    _, val_loader = make_loaders(df_train, df_val, tokenizer, args.batch_size)
+
+    model = TransformerClassifier(model_id, N_CLASSES, args.dropout).to(DEVICE)
+    state = torch.load(best_weights_path, map_location=DEVICE, weights_only=False)
+    model.load_state_dict({k: v.float() for k, v in state.items()})
+    model.eval()
+
+    all_preds, all_labels, all_probs = [], [], []
+    with torch.no_grad():
+        for batch in val_loader:
+            logits = model(batch["input_ids"].to(DEVICE), batch["attention_mask"].to(DEVICE))
+            probs  = torch.softmax(logits, dim=-1)
+            all_probs.extend(probs.cpu().numpy())
+            all_preds.extend(logits.argmax(dim=-1).cpu().numpy())
+            all_labels.extend(batch["label"].numpy())
+
+    macro_f1     = f1_score(all_labels, all_preds, average="macro", zero_division=0)
+    per_class_f1 = f1_score(all_labels, all_preds, average=None,
+                            zero_division=0, labels=list(range(N_CLASSES)))
+    report       = classification_report(all_labels, all_preds,
+                                         target_names=CLASSES, zero_division=0)
+
+    print(f"\n  [{shortname}] Report (geladen aus Checkpoint - kein Training):")
+    print(report)
+
+    del model
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
+    return {
+        "shortname":           shortname,
+        "model_id":            model_id,
+        "best_val_macro_f1":   round(macro_f1, 5),
+        "per_class_f1":        {cls: round(float(f), 5) for cls, f in zip(CLASSES, per_class_f1)},
+        "weights_path":        str(best_weights_path),
+        "val_probs":           np.array(all_probs),
+        "val_labels":          np.array(all_labels),
+        "total_steps":         0,
+        "early_stopped":       False,
+        "training_minutes":    0.0,
+        "final_report":        report,
+        "is_external":         False,
+        "skipped":             True,
+    }
+
+
 def train_single_model(cfg):
     model_id  = cfg["model_id"]
     shortname = cfg["shortname"]
     model_dir = OUT / f"model_{shortname}"
     model_dir.mkdir(exist_ok=True)
     best_weights_path = model_dir / "best_model_weights.pt"
+
+    # Bereits trainierten Checkpoint nicht erneut trainieren
+    if best_weights_path.exists():
+        return evaluate_existing_checkpoint(cfg, best_weights_path)
 
     print(f"\n{'─'*65}")
     print(f"  Trainiere: {model_id}")
@@ -461,6 +559,7 @@ def train_single_model(cfg):
         "training_minutes":    round(elapsed / 60, 1),
         "final_report":        final_report,
         "is_external":         False,
+        "skipped":             False,
     }
 
 # ------------------------------------------------------------------------------
@@ -537,6 +636,13 @@ def load_external_checkpoint(ckpt_path, base_model_id, shortname):
 print(f"\n{'='*65}")
 n_models = len(MODEL_CONFIGS) + (1 if USE_FOURTH else 0)
 print(f"  STARTE ENSEMBLE-TRAINING ({n_models} Modelle)")
+
+# Welche Modelle haben schon einen Checkpoint im out_dir?
+_already = [c["shortname"] for c in MODEL_CONFIGS.values()
+            if (OUT / f"model_{c['shortname']}" / "best_model_weights.pt").exists()]
+_to_train = [c["shortname"] for c in MODEL_CONFIGS.values() if c["shortname"] not in _already]
+print(f"  Zu trainieren:    {_to_train if _to_train else 'keine (alle vorhanden)'}")
+print(f"  Bereits trainiert:{_already if _already else 'keine'}  (werden nur evaluiert)")
 print(f"{'='*65}")
 
 model_results = {}
@@ -681,6 +787,10 @@ config = {
     "classes":               CLASSES,
     "class_weights":         {cls: round(float(w), 4) for cls, w in zip(CLASSES, weights)},
     "n_train":               len(df_train),
+    "n_train_base":          len(df_train_base),
+    "n_aug":                 len(aug_extra),
+    "n_test_in_train":       len(test_in_train),
+    "test_in_train":         USE_TEST_IN_TRAIN,
     "n_val":                 len(df_val),
     "aug_files_used":        aug_files_used,
     "ensemble_val_macro_f1": round(ensemble_macro_f1, 5),
@@ -714,6 +824,8 @@ results_row = {
     "n_train_base":        len(df_train_base),
     "n_aug_paraphrase":    len(df_para),
     "n_aug_generated":     len(df_gen),
+    "n_test_in_train":     len(test_in_train),
+    "test_in_train":       USE_TEST_IN_TRAIN,
     "n_val":               len(df_val),
     "ensemble_macro_f1":   round(ensemble_macro_f1, 5),
     **{f"ensemble_f1_{cls}": round(float(f), 5) for cls, f in zip(CLASSES, ensemble_per_class)},
@@ -751,6 +863,16 @@ print(f"\n  Ergebnis angehaengt: {results_path.resolve()}")
 total_minutes = sum(r["training_minutes"] for r in model_results.values())
 sep = "─" * 65
 
+n_trained = sum(1 for r in model_results.values()
+                if not r.get("is_external") and not r.get("skipped"))
+n_skipped = sum(1 for r in model_results.values() if r.get("skipped"))
+n_external = sum(1 for r in model_results.values() if r.get("is_external"))
+_parts = []
+if n_trained:  _parts.append(f"{n_trained} neu trainiert")
+if n_skipped:  _parts.append(f"{n_skipped} aus Checkpoint geladen")
+if n_external: _parts.append(f"{n_external} extern")
+models_summary = ", ".join(_parts) if _parts else f"{n_models}"
+
 fourth_info = ""
 if USE_FOURTH:
     r4 = model_results[args.fourth_model_name]
@@ -767,9 +889,9 @@ report_text = f"""GermEval 2026 - Subtask 2: Ensemble Training Report
 {sep}
 Timestamp:       {datetime.now().strftime('%Y-%m-%d %H:%M')}
 Augmentierung:   {args.augmentation}
-Modelle:         {n_models} ({'3 trainiert' + (' + 1 extern' if USE_FOURTH else '')})
-Train:           {len(df_train):,} (Basis: {len(df_train_base):,} + Aug: {len(df_train)-len(df_train_base):,})
-Val:             {len(df_val):,}
+Modelle:         {n_models} ({models_summary})
+Train:           {len(df_train):,} (Basis: {len(df_train_base):,} + Aug: {len(aug_extra):,} + Test: {len(test_in_train):,})
+Val:             {len(df_val):,}{' (Testdaten im Training - Val-Metriken nur eingeschraenkt aussagekraeftig)' if USE_TEST_IN_TRAIN else ''}
 Device:          {DEVICE}
 {fourth_info}
 
@@ -777,7 +899,8 @@ Ergebnisse Einzelmodelle (Val-Set):
 {chr(10).join(f"  {s:<12} Macro-F1: {r['best_val_macro_f1']:.5f}  "
               f"agitation: {r['per_class_f1'].get('agitation',0):.3f}  "
               f"subversive: {r['per_class_f1'].get('subversive',0):.3f}"
-              + (" [extern]" if r.get("is_external") else "")
+              + (" [extern]" if r.get("is_external")
+                 else " [Checkpoint]" if r.get("skipped") else "")
               for s, r in model_results.items())}
 
 Ensemble Ergebnis (Val-Set):
@@ -795,7 +918,8 @@ print(f"  ENSEMBLE-TRAINING ABGESCHLOSSEN")
 print(f"{'='*65}")
 print(f"  Ensemble Macro-F1 (Val):  {ensemble_macro_f1:.5f}")
 for short, res in model_results.items():
-    ext = " [extern]" if res.get("is_external") else ""
-    print(f"    {short:<12} {res['best_val_macro_f1']:.5f}{ext}")
+    tag = (" [extern]" if res.get("is_external")
+           else " [Checkpoint]" if res.get("skipped") else "")
+    print(f"    {short:<12} {res['best_val_macro_f1']:.5f}{tag}")
 print(f"\n  Alle Dateien in: {OUT.resolve()}")
 print(f"  predictions_test.csv | ensemble_config.json | {args.results_csv}\n")
