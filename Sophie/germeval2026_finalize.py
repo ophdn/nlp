@@ -223,14 +223,11 @@ if not args.from_scratch and args.warm_start_dir is None and args.source_run is 
     parser.error("Ohne --from_scratch muss --warm_start_dir ODER --source_run angegeben werden.")
 
 # Bei From-Scratch passendere Defaults setzen (nur wenn vom Nutzer nicht überschrieben).
-_defaults = parser.parse_args([
-    "--task", args.task, "--train_file", args.train_file, "--trial_file", args.trial_file,
-])
 if args.from_scratch:
-    if args.max_epochs   == _defaults.max_epochs:   args.max_epochs   = 10
-    if args.lr_encoder   == _defaults.lr_encoder:   args.lr_encoder   = 2e-5
-    if args.warmup_steps == _defaults.warmup_steps: args.warmup_steps = 200
-    if args.patience     == _defaults.patience:     args.patience     = 40
+    if args.max_epochs   == parser.get_default("max_epochs"):   args.max_epochs   = 10
+    if args.lr_encoder   == parser.get_default("lr_encoder"):   args.lr_encoder   = 2e-5
+    if args.warmup_steps == parser.get_default("warmup_steps"): args.warmup_steps = 200
+    if args.patience     == parser.get_default("patience"):     args.patience     = 40
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Setup
