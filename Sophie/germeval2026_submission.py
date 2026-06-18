@@ -1,22 +1,24 @@
 """
 GermEval 2026 – Inference & Submission Generator
 ==================================================
-Lädt das beste Ensemble (A8: mdeberta + gelectra + gbert, uniform voting,
-Val-Macro-F1: 0.80040) und erstellt die Submission-Dateien für Codabench.
+Generiert Submission-Dateien aus den final_runs_scratch-Checkpoints.
 
-Ausgabe (in --out_dir):
-  [team][run]_dbo.csv   →  id;dbo  (Predictions auf Testdaten)
-  [team][run].zip        →  Submission-ZIP für Codabench-Upload
+Task-spezifische Ensemble-Konfiguration:
+  c2a  →  gbert (single model)
+  def  →  gbert + gelectra + mdeberta  (gewichtetes Soft-Voting, Trial-F1-Gewichte)
+  vio  →  gbert (single model)
+
+Checkpoint-Pfad:
+  <base_dir>/<task>/model_<name>/best_model_weights.pt
 
 VERWENDUNG:
-    python germeval2026_submission.py
-    python germeval2026_submission.py --team TUMination --run 1
-    python germeval2026_submission.py --base_dir /cluster/path/model_dataset_gridsearch
-    python germeval2026_submission.py --test_file /path/to/dbo_test_26.csv
+    python germeval2026_submission.py --task c2a
+    python germeval2026_submission.py --task def --team DetecTUM --run 2
+    python germeval2026_submission.py --task vio --base_dir /pfad/zu/final_runs_scratch
+    python germeval2026_submission.py --task def --test_file /pfad/zu/def_test.csv
 """
 
 import argparse
-import json
 import zipfile
 from pathlib import Path
 
@@ -29,50 +31,84 @@ from torch.utils.data import DataLoader, Dataset
 from transformers import AutoModel, AutoTokenizer
 
 # ──────────────────────────────────────────────────────────────────────────────
-# CLI
+# Task-Konfiguration
 # ──────────────────────────────────────────────────────────────────────────────
-parser = argparse.ArgumentParser(description="GermEval 2026 – Submission")
-parser.add_argument("--team",       default="DetecTUM",
-                    help="Teamname (wie auf Codabench registriert)")
-parser.add_argument("--run",        default="2",
-                    help="Run-Nummer: 1, 2 oder 3 (max. 3 Submissions erlaubt)")
-parser.add_argument("--base_dir",   default="final_runs_scratch",
-                    help="Ordner mit den trainierten Run-Unterordnern")
-parser.add_argument("--train_file", default=None,
-                    help="Trainingsdatei für LabelEncoder (CSV mit 'text'+'label' "
-                         "oder 'description'+'dbo' Spalten). "
-                         "Default: wird relativ zu base_dir gesucht.")
-parser.add_argument("--test_file",  default=None,
-                    help="Pfad zur dbo_test_26.csv. "
-                         "Default: wird relativ zum Skript gesucht.")
-parser.add_argument("--out_dir",    default="submissions/c2a",
-                    help="Ausgabeverzeichnis für CSV und ZIP")
-args = parser.parse_args()
+TASK_CONFIG = {
+    "c2a": {
+        "classes":    ["FALSE", "TRUE"],
+        "label_col":  "c2a",
+        "test_file":  "../GermEval2026/data/c2a/c2a_test_26.csv",
+        "train_file": "../GermEval2026/data/c2a/c2a_train_26.csv",
+        # (model_name, hf_id, weight)  – weight=None → uniform
+        "ensemble": [
+            ("gbert", "deepset/gbert-large", None),
+        ],
+    },
+    "def": {
+        "classes":    ["FALSE", "TRUE"],
+        "label_col":  "def",
+        "test_file":  "../GermEval2026/data/def/def_test.csv",
+        "train_file": "../GermEval2026/data/def/def_train.csv",
+        # Gewichte = Trial-F1 aus Ensemble-Vergleich (gbert, gelectra, mdeberta)
+        "ensemble": [
+            ("gbert",    "deepset/gbert-large",                0.85),
+            ("gelectra", "deepset/gelectra-large-germanquad",  0.82),
+            ("mdeberta", "microsoft/mdeberta-v3-base",         0.80),
+        ],
+    },
+    "vio": {
+        "classes":    ["call2violence", "glorification", "nothing", "other", "propensity", "support"],
+        "label_col":  "vio",
+        "test_file":  "../GermEval2026/data/vio/vio_test_26.csv",
+        "train_file": "../GermEval2026/data/vio/vio_train_26.csv",
+        "ensemble": [
+            ("gbert", "deepset/gbert-large", None),
+        ],
+    },
+}
 
-BASE_DIR = Path(args.base_dir)
-OUT_DIR  = Path(args.out_dir)
-OUT_DIR.mkdir(parents=True, exist_ok=True)
+LABEL_FIXES = {
+    "prospensity": "propensity",
+    "True":  "TRUE",
+    "False": "FALSE",
+}
 
-TEAM     = args.team
-RUN      = args.run
-CSV_NAME = f"{TEAM}{RUN}_dbo.csv"
-ZIP_NAME = f"{TEAM}{RUN}.zip"
-RUN = "c2a"
-
-# ──────────────────────────────────────────────────────────────────────────────
-# Ensemble-Konfiguration A8_trio_mde_gel_gbert_uni  (Val-Macro-F1: 0.80040)
-# ──────────────────────────────────────────────────────────────────────────────
-ENSEMBLE = [
-    ("mdeberta", "microsoft/mdeberta-v3-base",        RUN),
-    ("gelectra", "deepset/gelectra-large-germanquad", RUN),
-    ("gbert",    "deepset/gbert-large",               RUN),
-]
-
-CLASSES    = ["TRUE", "FALSE"]  # alphabetisch = LabelEncoder
 MAX_LENGTH = 128
 BATCH_SIZE = 16
 DROPOUT    = 0.1
 DEVICE     = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+# ──────────────────────────────────────────────────────────────────────────────
+# CLI
+# ──────────────────────────────────────────────────────────────────────────────
+parser = argparse.ArgumentParser(description="GermEval 2026 – Submission")
+parser.add_argument("--task",       required=True, choices=list(TASK_CONFIG),
+                    help="Task: c2a | def | vio")
+parser.add_argument("--team",       default="DetecTUM",
+                    help="Teamname (wie auf Codabench registriert)")
+parser.add_argument("--run",        default="1",
+                    help="Run-Nummer: 1, 2 oder 3")
+parser.add_argument("--base_dir",   default="final_runs_scratch",
+                    help="Ordner mit den Task-Unterordnern (default: final_runs_scratch)")
+parser.add_argument("--train_file", default=None,
+                    help="Trainingsdatei fuer LabelEncoder (ueberschreibt Task-Default)")
+parser.add_argument("--test_file",  default=None,
+                    help="Pfad zur Test-CSV (ueberschreibt Task-Default)")
+parser.add_argument("--out_dir",    default=None,
+                    help="Ausgabeverzeichnis (default: submissions/<task>)")
+args = parser.parse_args()
+
+TASK   = args.task
+CFG    = TASK_CONFIG[TASK]
+TEAM   = args.team
+RUN_NR = args.run
+
+BASE_DIR = Path(args.base_dir)
+OUT_DIR  = Path(args.out_dir) if args.out_dir else Path("submissions") / TASK
+OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+CSV_NAME = f"{TEAM}{RUN_NR}_{TASK}.csv"
+ZIP_NAME = f"{TEAM}{RUN_NR}_{TASK}.zip"
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Architektur (identisch mit Training)
@@ -118,48 +154,42 @@ class InferenceDataset(Dataset):
 # ──────────────────────────────────────────────────────────────────────────────
 # Hilfsfunktionen
 # ──────────────────────────────────────────────────────────────────────────────
-def load_test_data(test_file: Path) -> pd.DataFrame:
-    """Liest dbo_test_26.csv (id;description) ein."""
+def load_test_data(test_path: str) -> pd.DataFrame:
+    """Liest Test-CSV (id;description oder id,description)."""
     for kwargs in [
         {"sep": ";"},
         {"sep": ";", "quoting": 3},
+        {"sep": ","},
         {"sep": ";", "engine": "python"},
     ]:
         try:
-            test_file = args.test_file
-            df = pd.read_csv(test_file, **kwargs)
+            df = pd.read_csv(test_path, **kwargs)
             if "id" in df.columns and "description" in df.columns:
                 return df[["id", "description"]].dropna(subset=["description"])
         except Exception:
             continue
-    raise ValueError(f"Kann Testdaten nicht lesen: {test_file}")
+    raise ValueError(f"Kann Testdaten nicht lesen: {test_path}")
 
 
-def load_train_labels(train_file: Path) -> list:
-    """Liest Trainingsdaten und gibt alle Label-Werte zurück (für LabelEncoder)."""
-    for kwargs, label_col in [
-        ({"sep": ";"}, "c"),
-        ({},           "label"),
-        ({"sep": ";"}, "label"),
-        ({},           RUN),
-    ]:
+def load_label_classes(train_path: str, label_col: str, fallback: list) -> list:
+    """Gibt alle Label-Werte aus der Trainingsdatei zurueck (fuer LabelEncoder)."""
+    for kwargs in [{"sep": ";"}, {"sep": ","}, {}]:
         try:
-            df = pd.read_csv(train_file, **kwargs)
+            df = pd.read_csv(train_path, **kwargs)
             if label_col in df.columns:
-                return df[label_col].dropna().tolist()
+                vals = df[label_col].dropna().astype(str).tolist()
+                # Tippfehler-Fixes anwenden
+                vals = [LABEL_FIXES.get(v, v) for v in vals]
+                return vals
         except Exception:
             continue
-    # Fallback: Klassen sind bekannt
-    print("  WARNUNG: Trainingsdaten nicht lesbar – verwende hartcodierte Klassen.")
-    return CLASSES * 10
-
-
-
+    print(f"  WARNUNG: Trainingsdaten nicht lesbar ({train_path}) – verwende hartcodierte Klassen.")
+    return fallback * 10
 
 
 @torch.no_grad()
 def run_inference(model, texts, tokenizer) -> np.ndarray:
-    """Gibt Softmax-Wahrscheinlichkeiten zurück: shape (N, n_classes)."""
+    """Gibt Softmax-Wahrscheinlichkeiten zurueck: shape (N, n_classes)."""
     dataset = InferenceDataset(texts, tokenizer, MAX_LENGTH)
     loader  = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=0)
     model.eval()
@@ -177,53 +207,49 @@ def run_inference(model, texts, tokenizer) -> np.ndarray:
 # ──────────────────────────────────────────────────────────────────────────────
 # Hauptprogramm
 # ──────────────────────────────────────────────────────────────────────────────
-SEP = "─" * 70
+SEP = "-" * 70
 print(f"\n{'='*70}")
 print(f"  GermEval 2026 – Submission Generator")
 print(f"{'='*70}")
-print(f"  Team:      {TEAM}")
-print(f"  Run:       {RUN}")
+print(f"  Task:      {TASK}")
+print(f"  Team:      {TEAM}  Run: {RUN_NR}")
 print(f"  Device:    {DEVICE}")
-print(f"  Ensemble:  A8_trio_mde_gel_gbert_uni  (Val-Macro-F1: 0.80040)")
+print(f"  Ensemble:  {[m for m,_,_ in CFG['ensemble']]}")
 print(f"  Ausgabe:   {OUT_DIR / ZIP_NAME}")
 print(f"{'='*70}\n")
 
 # 1. Testdaten laden
-test_path = args.test_file
+test_path = args.test_file or CFG["test_file"]
 print(f"  Testdaten: {test_path}")
-df_test   = load_test_data(test_path)
-test_ids  = df_test["id"].astype(str).tolist()
+df_test    = load_test_data(test_path)
+test_ids   = df_test["id"].astype(str).tolist()
 test_texts = df_test["description"].tolist()
-print(f"  {len(test_texts)} Test-Tweets geladen.\n")
+print(f"  {len(test_texts)} Test-Beispiele geladen.\n")
 
-# 2. LabelEncoder aufbauen (Klassen-Reihenfolge muss mit Training übereinstimmen)
-train_path = args.train_file
-if train_path:
-    print(f"  Trainingsdaten für LabelEncoder: {train_path}")
-    labels_for_le = load_train_labels(train_path)
-else:
-    print("  Trainingsdaten nicht gefunden – hartcodierte Klassen.")
-    labels_for_le = CLASSES * 10
+# 2. LabelEncoder aufbauen
+train_path = args.train_file or CFG["train_file"]
+print(f"  LabelEncoder aus: {train_path}")
+labels_for_le = load_label_classes(train_path, CFG["label_col"], CFG["classes"])
 
 le = LabelEncoder()
 le.fit(labels_for_le)
 print(f"  Klassen: {list(le.classes_)}\n")
-
 n_classes = len(le.classes_)
 
-# 3. Inferenz für jedes Ensemble-Modell
+# 3. Inferenz fuer jedes Ensemble-Modell
 print(f"{SEP}")
 print(f"  INFERENZ")
 print(f"{SEP}")
 
-probs_list = []
-for model_name, model_id, run_folder in ENSEMBLE:
-    ckpt_path = BASE_DIR / run_folder / f"model_{model_name}" / "best_model_weights.pt"
-    print(f"\n  Lade {model_name:<12} ← {ckpt_path}")
+probs_list   = []
+weight_list  = []
+
+for model_name, model_id, weight in CFG["ensemble"]:
+    ckpt_path = BASE_DIR / TASK / f"model_{model_name}" / "best_model_weights.pt"
+    print(f"\n  Lade {model_name:<12} <- {ckpt_path}")
 
     if not ckpt_path.exists():
-        print(f"  FEHLER: Checkpoint nicht gefunden: {ckpt_path}")
-        print(f"  Überspringe {model_name}.")
+        print(f"  FEHLER: Checkpoint nicht gefunden – ueberspringe {model_name}.")
         continue
 
     tokenizer = AutoTokenizer.from_pretrained(model_id, use_fast=False)
@@ -233,28 +259,34 @@ for model_name, model_id, run_folder in ENSEMBLE:
 
     probs = run_inference(model, test_texts, tokenizer)
     probs_list.append(probs)
-    print(f"  {model_name}: Predictions shape {probs.shape}  "
-          f"(most common: {le.classes_[probs.argmax(axis=1)].tolist().count(le.classes_[probs.argmax(axis=1)][0])} ...)")
+    weight_list.append(weight if weight is not None else 1.0)
+    print(f"  {model_name}: shape {probs.shape}")
 
     del model
     torch.cuda.empty_cache()
 
 if not probs_list:
-    raise RuntimeError("Keine Checkpoints geladen – bitte Pfade prüfen.")
+    raise RuntimeError("Keine Checkpoints geladen – bitte Pfade pruefen.")
 
-# 4. Uniform Voting
+# 4. Ensemble-Aggregation
 print(f"\n{SEP}")
-print(f"  ENSEMBLE-AGGREGATION (uniform voting über {len(probs_list)} Modelle)")
-print(f"{SEP}")
+w = np.array(weight_list, dtype=float)
+w /= w.sum()   # normieren
 
-ensemble_probs = np.mean(probs_list, axis=0)          # (N, n_classes)
-pred_indices   = ensemble_probs.argmax(axis=1)         # (N,)
-pred_labels    = le.inverse_transform(pred_indices)    # (N,) → Klassenname
+if len(probs_list) == 1:
+    print(f"  Single-Model – kein Voting noetig.")
+    ensemble_probs = probs_list[0]
+else:
+    voting_type = "gewichtet" if any(x != 1.0 for x in weight_list) else "uniform"
+    print(f"  Ensemble-Aggregation: {voting_type} Soft-Voting ({len(probs_list)} Modelle)")
+    ensemble_probs = sum(wi * p for wi, p in zip(w, probs_list))
 
-# Verteilung ausgeben
+pred_indices = ensemble_probs.argmax(axis=1)
+pred_labels  = le.inverse_transform(pred_indices)
+
 unique, counts = np.unique(pred_labels, return_counts=True)
 for cls, cnt in zip(unique, counts):
-    print(f"  {cls:<12}: {cnt:>5} ({cnt/len(pred_labels)*100:.1f}%)")
+    print(f"  {cls:<20}: {cnt:>5} ({cnt/len(pred_labels)*100:.1f}%)")
 
 # 5. Submission-CSV erstellen
 print(f"\n{SEP}")
@@ -262,10 +294,9 @@ print(f"  SUBMISSION-DATEIEN")
 print(f"{SEP}")
 
 csv_path = OUT_DIR / CSV_NAME
-df_out   = pd.DataFrame({"id": test_ids, RUN: pred_labels})
+df_out   = pd.DataFrame({"id": test_ids, TASK: pred_labels})
 df_out.to_csv(csv_path, sep=";", index=False)
-print(f"\n  CSV gespeichert: {csv_path}")
-print(f"  Vorschau:")
+print(f"\n  CSV: {csv_path}")
 print(df_out.head(5).to_string(index=False))
 
 # 6. ZIP packen
@@ -273,9 +304,7 @@ zip_path = OUT_DIR / ZIP_NAME
 with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
     zf.write(csv_path, arcname=CSV_NAME)
 
-print(f"\n  ZIP gespeichert: {zip_path}")
-print(f"  Enthält: {CSV_NAME}")
-
+print(f"\n  ZIP: {zip_path}")
 print(f"\n{'='*70}")
-print(f"  FERTIG – {ZIP_NAME} ist bereit für den Codabench-Upload.")
+print(f"  FERTIG – {ZIP_NAME} ist bereit fuer den Codabench-Upload.")
 print(f"{'='*70}\n")
