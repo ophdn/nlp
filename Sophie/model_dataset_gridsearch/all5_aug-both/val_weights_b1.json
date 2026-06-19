@@ -1,0 +1,9 @@
+{
+  "individual_results": {
+    "gbert":    {"agitation": 1.0, "criticism": 1.0, "nothing": 1.0, "subversive": 1.0},
+    "xlmr":     {"agitation": 1.0, "criticism": 1.0, "nothing": 1.0, "subversive": 1.0},
+    "deberta":  {"agitation": 1.0, "criticism": 1.0, "nothing": 1.0, "subversive": 1.0},
+    "mdeberta": {"agitation": 1.0, "criticism": 1.0, "nothing": 1.0, "subversive": 1.0},
+    "gelectra": {"agitation": 1.0, "criticism": 1.0, "nothing": 1.0, "subversive": 1.0}
+  }
+}
