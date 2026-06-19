@@ -39,26 +39,4 @@ python germeval2026_transfer.py \
   Ausgabe:      /u/halle/ophe/home_at/Desktop/nlp/Sophie/transfer_runs/vio
 =================================================================
 
-  Preprocessing ...
-Traceback (most recent call last):
-  File "/u/halle/ophe/home_at/Desktop/nlp/Sophie/germeval2026_finalize.py", line 269, in <module>
-    df_train_raw = load_and_preprocess(Path(args.train_file), args.task, has_label=True)
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/u/halle/ophe/home_at/Desktop/nlp/Sophie/germeval2026_finalize.py", line 138, in load_and_preprocess
-    df = pd.read_csv(path, sep=None, engine="python", on_bad_lines="warn")
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 873, in read_csv
-    return _read(filepath_or_buffer, kwds)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 300, in _read
-    parser = TextFileReader(filepath_or_buffer, **kwds)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1645, in __init__
-    self._engine = self._make_engine(f, self.engine)
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1904, in _make_engine
-    self.handles = get_handle(
-                   ^^^^^^^^^^^
-  File "/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/pandas/io/common.py", line 930, in get_handle
-    handle = open(
-             ^^^^^
+python germeval2026_finalize.py --task c2a --train_file ../data/GermEval2026/data/c2a/c2a_train_26.csv --trial_file ../data/GermEval2026/data/c2a/c2a_trial.csv --test_file ../data/GermEval2026/data/c2a/c2a_test_26.csv --from_scratch --models gbert --out_dir final_runs_scratch/c2a --mode select --team DetecTUM --run 2
