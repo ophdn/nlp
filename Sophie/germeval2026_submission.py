@@ -46,7 +46,7 @@ TASK_CONFIG = {
         "label_col":  "c2a",
         "test_file":  "../GermEval2026/data/c2a/c2a_test_26.csv",
         "train_file": "../GermEval2026/data/c2a/c2a_train_26.csv",
-        # (model_name, hf_id, weight)  – weight=None → uniform
+        "run_dir":    "c2a",
         "ensemble": [
             ("gbert", "deepset/gbert-large", None),
         ],
@@ -56,6 +56,22 @@ TASK_CONFIG = {
         "label_col":  "def",
         "test_file":  "../GermEval2026/data/def/def_test.csv",
         "train_file": "../GermEval2026/data/def/def_train.csv",
+        "run_dir":    "all5_aug-both",
+        # B1/B2: all-5 aus all5_aug-both (weight ignored when strategy=perclass)
+        "ensemble": [
+            ("gbert",    "deepset/gbert-large",                None),
+            ("xlmr",     "FacebookAI/xlm-roberta-large",       None),
+            ("deberta",  "microsoft/deberta-v3-base",          None),
+            ("mdeberta", "microsoft/mdeberta-v3-base",         None),
+            ("gelectra", "deepset/gelectra-large-germanquad",  None),
+        ],
+    },
+    "dbo": {
+        "classes":    ["agitation", "criticism", "nothing", "subversive"],
+        "label_col":  "dbo",
+        "test_file":  "../GermEval2026/data/dbo/dbo_test_26.csv",
+        "train_file": "../GermEval2026/data/dbo/dbo_train_26.csv",
+        "run_dir":    "all5_aug-both",
         # B1/B2: all-5 aus all5_aug-both (weight ignored when strategy=perclass)
         "ensemble": [
             ("gbert",    "deepset/gbert-large",                None),
@@ -70,11 +86,14 @@ TASK_CONFIG = {
         "label_col":  "vio",
         "test_file":  "../GermEval2026/data/vio/vio_test_26.csv",
         "train_file": "../GermEval2026/data/vio/vio_train_26.csv",
+        "run_dir":    "vio",
         "ensemble": [
             ("gbert", "deepset/gbert-large", None),
         ],
     },
 }
+
+_SCRIPT_DIR = Path(__file__).parent
 
 LABEL_FIXES = {
     "prospensity": "propensity",
@@ -92,13 +111,13 @@ DEVICE     = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # ──────────────────────────────────────────────────────────────────────────────
 parser = argparse.ArgumentParser(description="GermEval 2026 – Submission")
 parser.add_argument("--task",       required=True, choices=list(TASK_CONFIG),
-                    help="Task: c2a | def | vio")
+                    help="Task: c2a | def | dbo | vio")
 parser.add_argument("--team",       default="DetecTUM",
                     help="Teamname (wie auf Codabench registriert)")
 parser.add_argument("--run",        default="1",
                     help="Run-Nummer: 1, 2 oder 3")
-parser.add_argument("--base_dir",   default="final_runs_scratch",
-                    help="Ordner mit den Task-Unterordnern (default: final_runs_scratch)")
+parser.add_argument("--base_dir",   default="model_dataset_gridsearch",
+                    help="Ordner mit den Run-Unterordnern (default: model_dataset_gridsearch)")
 parser.add_argument("--train_file", default=None,
                     help="Trainingsdatei fuer LabelEncoder (ueberschreibt Task-Default)")
 parser.add_argument("--test_file",  default=None,
@@ -116,7 +135,7 @@ CFG    = TASK_CONFIG[TASK]
 TEAM   = args.team
 RUN_NR = args.run
 
-BASE_DIR = Path(args.base_dir)
+BASE_DIR = Path(args.base_dir) if args.base_dir != "model_dataset_gridsearch" else _SCRIPT_DIR / "model_dataset_gridsearch"
 OUT_DIR  = Path(args.out_dir) if args.out_dir else Path("submissions") / TASK
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -233,7 +252,7 @@ print(f"  Ausgabe:   {OUT_DIR / ZIP_NAME}")
 print(f"{'='*70}\n")
 
 # 1. Testdaten laden
-test_path = args.test_file or CFG["test_file"]
+test_path = args.test_file or str(_SCRIPT_DIR / CFG["test_file"])
 print(f"  Testdaten: {test_path}")
 df_test    = load_test_data(test_path)
 test_ids   = df_test["id"].astype(str).tolist()
@@ -241,7 +260,7 @@ test_texts = df_test["description"].tolist()
 print(f"  {len(test_texts)} Test-Beispiele geladen.\n")
 
 # 2. LabelEncoder aufbauen
-train_path = args.train_file or CFG["train_file"]
+train_path = args.train_file or str(_SCRIPT_DIR / CFG["train_file"])
 print(f"  LabelEncoder aus: {train_path}")
 labels_for_le = load_label_classes(train_path, CFG["label_col"], CFG["classes"])
 
@@ -259,7 +278,7 @@ probs_list   = []
 weight_list  = []
 
 for model_name, model_id, weight in CFG["ensemble"]:
-    ckpt_path = BASE_DIR / TASK / f"model_{model_name}" / "best_model_weights.pt"
+    ckpt_path = BASE_DIR / CFG["run_dir"] / f"model_{model_name}" / "best_model_weights.pt"
     print(f"\n  Lade {model_name:<12} <- {ckpt_path}")
 
     if not ckpt_path.exists():
