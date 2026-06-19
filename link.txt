@@ -1,13 +1,95 @@
+GermEval 2026 – Ensemble Comparison Report
+======================================================================
+Timestamp:   2026-06-19 11:06
+Konfigurationen getestet: 14
+Val-Set:     1586 Samples  |  Klassen: ['agitation', 'criticism', 'nothing', 'subversive']
 
-  Lade gbert        <- /u/halle/ophe/home_at/Desktop/nlp/Sophie/model_dataset_gridsearch/all5_aug-both/model_gbert/best_model_weights.pt
-/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py:949: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
-  warnings.warn(
-Traceback (most recent call last):
-  File "/u/halle/ophe/home_at/Desktop/nlp/Sophie/germeval2026_submission.py", line 291, in <module>
-    model.load_state_dict({k: v.float() for k, v in state.items()})
-  File "/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 2638, in load_state_dict
-    raise RuntimeError(
-RuntimeError: Error(s) in loading state_dict for TransformerClassifier:
-        size mismatch for classifier.3.weight: copying a param with shape torch.Size([4, 1024]) from checkpoint, the shape in current model is torch.Size([6, 1024]).
-        size mismatch for classifier.3.bias: copying a param with shape torch.Size([4]) from checkpoint, the shape in current model is torch.Size([6]).
-(venv) ophe@nc-10-4-3:~/Desktop/nlp/Sophie$ 
+======================================================================
+  STÄRKEN & SCHWÄCHEN DER BESTEN CHECKPOINTS
+======================================================================
+
+  XLMR         [all5_aug-none]
+    Macro-F1: n/a
+    Per-Klasse: n/a
+    Analyse:  Schwächstes Modell. Stärke: multilinguale Diversität, agitation 0.44 ohne Aug. Schwäche: bricht bei jeder Augmentierung komplett ein. Checkpoint aus aug-none nehmen.
+
+──────────────────────────────────────────────────────────────────────
+  GEWICHTUNGSMATRIZEN (Val-F1 pro Modell × Klasse)
+──────────────────────────────────────────────────────────────────────
+
+  [both]
+  Modell           agitation   criticism     nothing  subversive    Macro-F1
+  ────────────────────────────────────────────────────────────
+  gbert                0.609       0.612       0.951       0.533     0.67636
+  xlmr                 0.296       0.403       0.905       0.000     0.40101
+  deberta              0.588       0.592       0.945       0.727     0.71311
+  mdeberta             0.636       0.593       0.955       0.800     0.74611
+  gelectra             0.538       0.577       0.952       0.889     0.73897
+
+  [none]
+  Modell           agitation   criticism     nothing  subversive    Macro-F1
+  ────────────────────────────────────────────────────────────
+
+  [3para]
+  Modell           agitation   criticism     nothing  subversive    Macro-F1
+  ────────────────────────────────────────────────────────────
+  gbert                0.667       0.623       0.958       0.727     0.74360
+  mdeberta             0.690       0.598       0.949       0.889     0.78132
+  gelectra             0.645       0.608       0.954       0.889     0.77409
+
+  [a8final]
+  Modell           agitation   criticism     nothing  subversive    Macro-F1
+  ────────────────────────────────────────────────────────────
+  gbert                0.640       0.659       0.957       0.727     0.74591
+  mdeberta             0.400       0.603       0.951       0.545     0.62488
+  gelectra             0.276       0.596       0.946       0.571     0.59733
+
+======================================================================
+  ENSEMBLE-VERGLEICH (sortiert nach Macro-F1)
+======================================================================
+  Rang  Konfiguration                          Strategie    #   agit    crit    noth    subv      Macro-F1
+  ──────────────────────────────────────────────────────────────────────
+  1     B2_all5_perclass_both                  per_class    5   0.7273  0.6136  0.9543  0.8889  0.79601  ← BEST
+  2     B1_all5_uniform_both                   uniform      5   0.7273  0.6113  0.9544  0.8889  0.79545  ← Ref
+  3     B4_top4_noxlmr_both_pcls               per_class    4   0.7273  0.6113  0.9544  0.8889  0.79545
+  4     E1_trio_3para_uniform                  uniform      3   0.6429  0.6051  0.9550  0.8889  0.77296
+  5     E2_trio_3para_perclass                 per_class    3   0.6429  0.6051  0.9550  0.8889  0.77296
+  6     E3_trio_3para_macroF1                  macro_f1     3   0.6429  0.6051  0.9550  0.8889  0.77296
+  7     B3_top4_noxlmr_both_uni                uniform      4   0.7273  0.6095  0.9536  0.8000  0.77259
+  8     E4_trio_3para_winner                   winner       3   0.6429  0.6159  0.9590  0.8000  0.75445
+  9     D3_all5_winner_both                    winner       5   0.6364  0.6154  0.9543  0.8000  0.75152
+  10    D4_top4_winner_both                    winner       4   0.6364  0.6154  0.9543  0.8000  0.75152
+  11    F4_trio_a8final_winner                 winner       3   0.6400  0.6592  0.9572  0.7273  0.74591
+  12    F2_trio_a8final_perclass               per_class    3   0.5926  0.6103  0.9543  0.6667  0.70596
+  13    F1_trio_a8final_uniform                uniform      3   0.4348  0.6108  0.9536  0.7273  0.68162
+  14    F3_trio_a8final_macroF1                macro_f1     3   0.4348  0.6149  0.9536  0.6667  0.66749
+
+======================================================================
+  BESTE KONFIGURATION: B2_all5_perclass_both
+======================================================================
+  Modelle:   gbert+xlmr+deberta+mdeberta+gelectra
+  Strategie: per_class
+  Macro-F1:  0.79601
+
+              precision    recall  f1-score   support
+
+   agitation       1.00      0.57      0.73        14
+   criticism       0.67      0.57      0.61       184
+     nothing       0.94      0.97      0.95      1383
+  subversive       1.00      0.80      0.89         5
+
+    accuracy                           0.92      1586
+   macro avg       0.90      0.73      0.80      1586
+weighted avg       0.91      0.92      0.91      1586
+
+======================================================================
+  EMPFEHLUNG
+======================================================================
+  Beste Konfiguration:      B2_all5_perclass_both                  Macro-F1: 0.79601
+  vs. Referenz B1 (both):   B1_all5_uniform_both                   Macro-F1: 0.79545  (+0.00057)
+
+  BEFUND: All-5 (both) ist besser als Top-4 ohne xlmr um 0.02286 → xlmr trägt netto positiv bei.
+
+  Für Checkpoint-Auswahl beim nächsten Training empfohlen:
+    → B2_all5_perclass_both als Basis-Ensemble-Strategie
+======================================================================
