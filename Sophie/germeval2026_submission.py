@@ -5,7 +5,9 @@ Generiert Submission-Dateien aus den final_runs_scratch-Checkpoints.
 
 Task-spezifische Ensemble-Konfiguration:
   c2a  →  gbert (single model)
-  def  →  gbert + gelectra + mdeberta  (gewichtetes Soft-Voting, Trial-F1-Gewichte)
+  def  →  all-5 (gbert, xlmr, deberta, mdeberta, gelectra) aus all5_aug-both
+           Run 1 (B1): uniform Soft-Voting
+           Run 2 (B2): per-class F1 gewichtetes Soft-Voting
   vio  →  gbert (single model)
 
 Checkpoint-Pfad:
@@ -13,12 +15,17 @@ Checkpoint-Pfad:
 
 VERWENDUNG:
     python germeval2026_submission.py --task c2a
-    python germeval2026_submission.py --task def --team DetecTUM --run 2
+    python germeval2026_submission.py --task def --run 1 --strategy uniform
+    python germeval2026_submission.py --task def --run 2 --strategy perclass --weights_file val_weights.json
     python germeval2026_submission.py --task vio --base_dir /pfad/zu/final_runs_scratch
     python germeval2026_submission.py --task def --test_file /pfad/zu/def_test.csv
+
+weights_file format (JSON):
+  {"gbert": [f1_class0, f1_class1, ...], "xlmr": [...], ...}
 """
 
 import argparse
+import json
 import zipfile
 from pathlib import Path
 
@@ -49,11 +56,13 @@ TASK_CONFIG = {
         "label_col":  "def",
         "test_file":  "../GermEval2026/data/def/def_test.csv",
         "train_file": "../GermEval2026/data/def/def_train.csv",
-        # Gewichte = Trial-F1 aus Ensemble-Vergleich (gbert, gelectra, mdeberta)
+        # B1/B2: all-5 aus all5_aug-both (weight ignored when strategy=perclass)
         "ensemble": [
-            ("gbert",    "deepset/gbert-large",                0.85),
-            ("gelectra", "deepset/gelectra-large-germanquad",  0.82),
-            ("mdeberta", "microsoft/mdeberta-v3-base",         0.80),
+            ("gbert",    "deepset/gbert-large",                None),
+            ("xlmr",     "FacebookAI/xlm-roberta-large",       None),
+            ("deberta",  "microsoft/deberta-v3-base",          None),
+            ("mdeberta", "microsoft/mdeberta-v3-base",         None),
+            ("gelectra", "deepset/gelectra-large-germanquad",  None),
         ],
     },
     "vio": {
@@ -94,8 +103,12 @@ parser.add_argument("--train_file", default=None,
                     help="Trainingsdatei fuer LabelEncoder (ueberschreibt Task-Default)")
 parser.add_argument("--test_file",  default=None,
                     help="Pfad zur Test-CSV (ueberschreibt Task-Default)")
-parser.add_argument("--out_dir",    default=None,
+parser.add_argument("--out_dir",      default=None,
                     help="Ausgabeverzeichnis (default: submissions/<task>)")
+parser.add_argument("--strategy",     default="uniform", choices=["uniform", "perclass"],
+                    help="Ensemble-Strategie: uniform (B1) | perclass (B2)")
+parser.add_argument("--weights_file", default=None,
+                    help="JSON mit per-class F1-Gewichten pro Modell (benoetigt fuer --strategy perclass)")
 args = parser.parse_args()
 
 TASK   = args.task
@@ -215,6 +228,7 @@ print(f"  Task:      {TASK}")
 print(f"  Team:      {TEAM}  Run: {RUN_NR}")
 print(f"  Device:    {DEVICE}")
 print(f"  Ensemble:  {[m for m,_,_ in CFG['ensemble']]}")
+print(f"  Strategie: {args.strategy}")
 print(f"  Ausgabe:   {OUT_DIR / ZIP_NAME}")
 print(f"{'='*70}\n")
 
@@ -270,16 +284,30 @@ if not probs_list:
 
 # 4. Ensemble-Aggregation
 print(f"\n{SEP}")
-w = np.array(weight_list, dtype=float)
-w /= w.sum()   # normieren
+
+strategy = args.strategy
 
 if len(probs_list) == 1:
     print(f"  Single-Model – kein Voting noetig.")
     ensemble_probs = probs_list[0]
+elif strategy == "perclass":
+    # B2: per-class F1 gewichtetes Soft-Voting
+    if not args.weights_file:
+        raise ValueError("--weights_file benoetigt fuer --strategy perclass")
+    with open(args.weights_file, encoding="utf-8") as f:
+        weights_json = json.load(f)
+    loaded_model_names = [m for m, _, _ in CFG["ensemble"] if any(True for p in probs_list)]
+    W = np.array([weights_json[m] for m in loaded_model_names], dtype=float)  # (M, C)
+    P = np.stack(probs_list, axis=0)                                           # (M, N, C)
+    W_bc = W[:, np.newaxis, :]                                                 # (M, 1, C)
+    norm = W.sum(axis=0, keepdims=True)                                        # (1, C)
+    norm = np.where(norm == 0, 1.0, norm)
+    ensemble_probs = (P * W_bc).sum(axis=0) / norm                            # (N, C)
+    print(f"  Ensemble-Aggregation: per-class F1 gewichtet (B2, {len(probs_list)} Modelle)")
 else:
-    voting_type = "gewichtet" if any(x != 1.0 for x in weight_list) else "uniform"
-    print(f"  Ensemble-Aggregation: {voting_type} Soft-Voting ({len(probs_list)} Modelle)")
-    ensemble_probs = sum(wi * p for wi, p in zip(w, probs_list))
+    # B1: uniform Soft-Voting
+    ensemble_probs = np.mean(probs_list, axis=0)
+    print(f"  Ensemble-Aggregation: uniform (B1, {len(probs_list)} Modelle)")
 
 pred_indices = ensemble_probs.argmax(axis=1)
 pred_labels  = le.inverse_transform(pred_indices)
