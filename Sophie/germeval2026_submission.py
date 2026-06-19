@@ -44,8 +44,8 @@ TASK_CONFIG = {
     "c2a": {
         "classes":    ["FALSE", "TRUE"],
         "label_col":  "c2a",
-        "test_file":  "../GermEval2026/data/c2a/c2a_test_26.csv",
-        "train_file": "../GermEval2026/data/c2a/c2a_train_26.csv",
+        "test_file":  "../data/GermEval2026/data/c2a/c2a_test_26.csv",
+        "train_file": "../data/GermEval2026/data/c2a/c2a_train_26.csv",
         "run_dir":    "c2a",
         "ensemble": [
             ("gbert", "deepset/gbert-large", None),
@@ -54,8 +54,8 @@ TASK_CONFIG = {
     "def": {
         "classes":    ["FALSE", "TRUE"],
         "label_col":  "def",
-        "test_file":  "../GermEval2026/data/def/def_test.csv",
-        "train_file": "../GermEval2026/data/def/def_train.csv",
+        "test_file":  "../data/GermEval2026/data/def/def_test.csv",
+        "train_file": "../data/GermEval2026/data/def/def_train.csv",
         "run_dir":    "all5_aug-both",
         # B1/B2: all-5 aus all5_aug-both (weight ignored when strategy=perclass)
         "ensemble": [
@@ -69,8 +69,8 @@ TASK_CONFIG = {
     "dbo": {
         "classes":    ["agitation", "criticism", "nothing", "subversive"],
         "label_col":  "dbo",
-        "test_file":  "../GermEval2026/data/dbo/dbo_test_26.csv",
-        "train_file": "../GermEval2026/data/dbo/dbo_train_26.csv",
+        "test_file":  "../data/GermEval2026/data/dbo/dbo_test_26.csv",
+        "train_file": "../data/GermEval2026/data/dbo/dbo_train_26.csv",
         "run_dir":    "all5_aug-both",
         # B1/B2: all-5 aus all5_aug-both (weight ignored when strategy=perclass)
         "ensemble": [
@@ -84,8 +84,8 @@ TASK_CONFIG = {
     "vio": {
         "classes":    ["call2violence", "glorification", "nothing", "other", "propensity", "support"],
         "label_col":  "vio",
-        "test_file":  "../GermEval2026/data/vio/vio_test_26.csv",
-        "train_file": "../GermEval2026/data/vio/vio_train_26.csv",
+        "test_file":  "../data/GermEval2026/data/vio/vio_test_26.csv",
+        "train_file": "../data/GermEval2026/data/vio/vio_train_26.csv",
         "run_dir":    "vio",
         "ensemble": [
             ("gbert", "deepset/gbert-large", None),
