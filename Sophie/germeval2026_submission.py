@@ -315,13 +315,23 @@ elif strategy == "perclass":
         raise ValueError("--weights_file benoetigt fuer --strategy perclass")
     with open(args.weights_file, encoding="utf-8") as f:
         weights_json = json.load(f)
-    loaded_model_names = [m for m, _, _ in CFG["ensemble"] if any(True for p in probs_list)]
-    W = np.array([weights_json[m] for m in loaded_model_names], dtype=float)  # (M, C)
-    P = np.stack(probs_list, axis=0)                                           # (M, N, C)
-    W_bc = W[:, np.newaxis, :]                                                 # (M, 1, C)
-    norm = W.sum(axis=0, keepdims=True)                                        # (1, C)
+    print(f"  Gewichte geladen. Verfuegbare Keys: {list(weights_json.keys())}")
+    # short name → whatever key the JSON uses
+    MODEL_KEY_MAP = {
+        "gbert":    next((k for k in weights_json if "gbert"    in k.lower()), None),
+        "xlmr":     next((k for k in weights_json if "xlm"      in k.lower()), None),
+        "deberta":  next((k for k in weights_json if "deberta"  in k.lower() and "m" not in k.lower().replace("microsoft/","").replace("deberta","")), None),
+        "mdeberta": next((k for k in weights_json if "mdeberta" in k.lower()), None),
+        "gelectra": next((k for k in weights_json if "gelectra" in k.lower()), None),
+    }
+    loaded_model_names = [m for m, _, _ in CFG["ensemble"] if len(probs_list) > 0]
+    loaded_model_names = loaded_model_names[:len(probs_list)]
+    W = np.array([weights_json[MODEL_KEY_MAP[m]] for m in loaded_model_names], dtype=float)  # (M, C)
+    P = np.stack(probs_list, axis=0)                                                          # (M, N, C)
+    W_bc = W[:, np.newaxis, :]                                                                # (M, 1, C)
+    norm = W.sum(axis=0, keepdims=True)                                                       # (1, C)
     norm = np.where(norm == 0, 1.0, norm)
-    ensemble_probs = (P * W_bc).sum(axis=0) / norm                            # (N, C)
+    ensemble_probs = (P * W_bc).sum(axis=0) / norm                                           # (N, C)
     print(f"  Ensemble-Aggregation: per-class F1 gewichtet (B2, {len(probs_list)} Modelle)")
 else:
     # B1: uniform Soft-Voting
