@@ -86,7 +86,7 @@ TASK_CONFIG = {
         "label_col":  "vio",
         "test_file":  "../data/GermEval2026/data/vio/vio_test_26.csv",
         "train_file": "../data/GermEval2026/data/vio/vio_train_26.csv",
-        "run_dir":    "vio",
+        "run_dir":    "all5_aug-both",
         "ensemble": [
             ("gbert", "deepset/gbert-large", None),
         ],
