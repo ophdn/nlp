@@ -1,0 +1,9 @@
+{
+  "individual_results": {
+    "gbert":    {"agitation": 0.609, "criticism": 0.612, "nothing": 0.951, "subversive": 0.533},
+    "xlmr":     {"agitation": 0.296, "criticism": 0.403, "nothing": 0.905, "subversive": 0.000},
+    "deberta":  {"agitation": 0.588, "criticism": 0.592, "nothing": 0.945, "subversive": 0.727},
+    "mdeberta": {"agitation": 0.636, "criticism": 0.593, "nothing": 0.955, "subversive": 0.800},
+    "gelectra": {"agitation": 0.538, "criticism": 0.577, "nothing": 0.952, "subversive": 0.889}
+  }
+}
