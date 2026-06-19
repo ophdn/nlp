@@ -1,21 +1,13 @@
 """
 GermEval 2026 – Ensemble Comparison
 =====================================
-Lädt die besten bekannten Checkpoints pro Modell (aus Analyse von
-final_report_5.txt) und testet 17 Ensemble-Kombinationen:
-  - verschiedene Modell-Subsets  (All-5, Top-4, Trios, Duo, Einzelmodelle)
-  - vier Gewichtungsstrategien   (uniform, per-class F1, globale Macro-F1, winner-takes-all)
-  - Checkpoints aus para / both / gemischt (jedes Modell sein persönliches Bestes)
-
-Bester Checkpoint pro Modell (aus Analyse):
-  gbert    → all5_aug-paraphrase  (Macro-F1 0.7277)
-  xlmr     → all5_aug-none        (Macro-F1 0.5534) ← Augmentierung schadet
-  deberta  → all5_aug-paraphrase  (Macro-F1 0.7347)
-  mdeberta → all5_aug-paraphrase  (Macro-F1 0.7885)
-  gelectra → all5_aug-paraphrase  (Macro-F1 0.7863)
+Testet Ensemble-Kombinationen auf Basis der verfügbaren Checkpoints:
+  - Gruppe B: all5_aug-both (alle 5 Modelle)
+  - Gruppe D: Winner-takes-all auf both-Checkpoints
+  - Gruppe E: Trio aus 3_aug-paraphrase (gbert, gelectra, mdeberta)
+  - Gruppe F: Trio aus A8_trio_final_submission (gbert, gelectra, mdeberta)
 
 Referenzwerte (aus final_report_5.txt):
-  All-5 uniform paraphrase  → 0.7737
   All-5 uniform both        → 0.7955  ← bisher bestes bekanntes Ergebnis
 
 VERWENDUNG:
@@ -68,31 +60,10 @@ MODEL_REGISTRY = {
 # Stärken/Schwächen pro Modell (beste Checkpoints, für Report-Narration)
 # ──────────────────────────────────────────────────────────────────────────────
 MODEL_NOTES = {
-    "gbert": (
-        "para",
-        "Guter Allrounder. Stärke: agitation (0.72), solides subversive (0.62). "
-        "Schwäche: schwächstes subversive der Top-Modelle."
-    ),
     "xlmr": (
         "none",
         "Schwächstes Modell. Stärke: multilinguale Diversität, agitation 0.44 ohne Aug. "
-        "Schwäche: bricht bei jeder Augmentierung komplett ein (agit/subv → 0.0 mit para). "
-        "Checkpoint aus aug-none nehmen."
-    ),
-    "deberta": (
-        "para",
-        "Stark bei seltenen Klassen. Stärke: subversive 0.73, gute Balance. "
-        "Schwäche: agitation 0.67 (hinter gbert/mdeberta/gelectra)."
-    ),
-    "mdeberta": (
-        "para",
-        "Bestes Einzelmodell. Stärke: subversive 0.889 (gemeinsam bestes), agitation 0.73. "
-        "Schwäche: ähnlich wie gelectra → hohe Korrelation, wenig Diversitätsgewinn."
-    ),
-    "gelectra": (
-        "para",
-        "Gleich stark wie mdeberta. Stärke: subversive 0.889, agitation 0.73. "
-        "Schwäche: Germano-spezifisch (germanquad pre-training) → weniger cross-linguale Diversität."
+        "Schwäche: bricht bei jeder Augmentierung komplett ein. Checkpoint aus aug-none nehmen."
     ),
 }
 
@@ -100,11 +71,6 @@ MODEL_NOTES = {
 # Checkpoint-Mapping: (model, run_key) → run-Unterordner
 # ──────────────────────────────────────────────────────────────────────────────
 CHECKPOINT_MAP = {
-    ("gbert",    "para"): "all5_aug-paraphrase",
-    ("xlmr",     "para"): "all5_aug-paraphrase",
-    ("deberta",  "para"): "all5_aug-paraphrase",
-    ("mdeberta", "para"): "all5_aug-paraphrase",
-    ("gelectra", "para"): "all5_aug-paraphrase",
     ("gbert",    "both"): "all5_aug-both",
     ("xlmr",     "both"): "all5_aug-both",
     ("deberta",  "both"): "all5_aug-both",
@@ -122,56 +88,26 @@ CHECKPOINT_MAP = {
 # ──────────────────────────────────────────────────────────────────────────────
 # Ensemble-Konfigurationen
 # Format: (name, [(model, run_key), ...], weighting_strategy)
-# weighting: "uniform" | "per_class" | "macro_f1"
+# weighting: "uniform" | "per_class" | "macro_f1" | "winner"
 # ──────────────────────────────────────────────────────────────────────────────
-_P   = "para"
 _B   = "both"
-_N   = "none"
 _3P  = "3para"
 _A8F = "a8final"
 
-_ALL5_P   = [("gbert",_P),("xlmr",_P),("deberta",_P),("mdeberta",_P),("gelectra",_P)]
-_TOP4_P   = [("gbert",_P),("deberta",_P),("mdeberta",_P),("gelectra",_P)]
-_TRIO1_P  = [("mdeberta",_P),("gelectra",_P),("deberta",_P)]     # beste 3 Modelle (para)
-_TRIO2_P  = [("mdeberta",_P),("gelectra",_P),("gbert",_P)]       # mdeberta+gelectra + Diversität
-_DUO_P    = [("mdeberta",_P),("gelectra",_P)]                     # die zwei Besten
 _ALL5_B   = [("gbert",_B),("xlmr",_B),("deberta",_B),("mdeberta",_B),("gelectra",_B)]
 _TOP4_B   = [("gbert",_B),("deberta",_B),("mdeberta",_B),("gelectra",_B)]
-_ALL5_MIX  = [("gbert",_P),("xlmr",_N),("deberta",_P),("mdeberta",_P),("gelectra",_P)]
-_TRIO_3P   = [("gbert",_3P),("gelectra",_3P),("mdeberta",_3P)]
-_TRIO_A8F  = [("gbert",_A8F),("gelectra",_A8F),("mdeberta",_A8F)]
+_TRIO_3P  = [("gbert",_3P),("gelectra",_3P),("mdeberta",_3P)]
+_TRIO_A8F = [("gbert",_A8F),("gelectra",_A8F),("mdeberta",_A8F)]
 
 ENSEMBLE_CONFIGS = [
-    # ── Einzelmodell-Baselines ─────────────────────────────────────────────────
-    ("S1_mdeberta_para",          [("mdeberta",_P)],  "uniform"),
-    ("S2_gelectra_para",          [("gelectra",_P)],  "uniform"),
-    ("S3_deberta_para",           [("deberta",_P)],   "uniform"),
-    # ── Gruppe A: alle Checkpoints aus paraphrase-Run ─────────────────────────
-    ("A1_all5_uniform_para",      _ALL5_P,   "uniform"),   # Referenz 0.7737
-    ("A2_all5_perclass_para",     _ALL5_P,   "per_class"),
-    ("A3_all5_macroF1_para",      _ALL5_P,   "macro_f1"),
-    ("A4_top4_noxlmr_uniform",    _TOP4_P,   "uniform"),
-    ("A5_top4_noxlmr_perclass",   _TOP4_P,   "per_class"),
-    ("A6_trio_mde_gel_deb_uni",   _TRIO1_P,  "uniform"),
-    ("A7_trio_mde_gel_deb_pcls",  _TRIO1_P,  "per_class"),
-    ("A8_trio_mde_gel_gbert_uni", _TRIO2_P,  "uniform"),
-    ("A9_duo_mde_gel",            _DUO_P,    "uniform"),
     # ── Gruppe B: alle Checkpoints aus both-Run ───────────────────────────────
     ("B1_all5_uniform_both",      _ALL5_B,   "uniform"),   # Referenz 0.7955
     ("B2_all5_perclass_both",     _ALL5_B,   "per_class"),
     ("B3_top4_noxlmr_both_uni",   _TOP4_B,   "uniform"),
     ("B4_top4_noxlmr_both_pcls",  _TOP4_B,   "per_class"),
-    # ── Gruppe C: Mixed – jedes Modell aus seinem persönlich besten Checkpoint ─
-    ("C1_all5_uniform_mixed",     _ALL5_MIX, "uniform"),
-    ("C2_all5_perclass_mixed",    _ALL5_MIX, "per_class"),
-    # ── Gruppe D: Winner-takes-all – bestes Modell pro Klasse entscheidet absolut ─
-    # Erwartetes Routing (para): agit→mdeberta/gelectra, crit→gbert, subv→mdeberta/gelectra
-    ("D1_all5_winner_para",       _ALL5_P,   "winner"),
-    ("D2_top4_winner_para",       _TOP4_P,   "winner"),
+    # ── Gruppe D: Winner-takes-all ────────────────────────────────────────────
     ("D3_all5_winner_both",       _ALL5_B,   "winner"),
     ("D4_top4_winner_both",       _TOP4_B,   "winner"),
-    ("D5_all5_winner_mixed",      _ALL5_MIX, "winner"),
-    ("D6_trio_winner_para",       _TRIO1_P,  "winner"),
     # ── Gruppe E: Trio aus 3_aug-paraphrase ───────────────────────────────────
     ("E1_trio_3para_uniform",     _TRIO_3P,  "uniform"),
     ("E2_trio_3para_perclass",    _TRIO_3P,  "per_class"),
@@ -327,8 +263,8 @@ print(f"  Konfigurationen: {len(ENSEMBLE_CONFIGS)}")
 print(f"  Ausgabe:   {OUT_PATH}")
 print(f"{'='*70}\n")
 
-# Referenz-Config laden (paraphrase, seed=42 → identisches Val-Set für alle Runs)
-ref_run = BASE_DIR / "all5_aug-paraphrase"
+# Referenz-Config laden (seed=42 → identisches Val-Set für alle Runs)
+ref_run = BASE_DIR / "all5_aug-both"
 with open(ref_run / "ensemble_config.json", encoding="utf-8") as f:
     ref_cfg = json.load(f)
 
@@ -518,7 +454,7 @@ table_header = (
 table_rows = ""
 for rank, r in enumerate(results, 1):
     cls_vals = "  ".join(f"{r[f'f1_{c}']:.4f}" for c in CLASSES)
-    marker = "  ← BEST" if rank == 1 else ("  ← Ref" if r["name"] in ("A1_all5_uniform_para","B1_all5_uniform_both") else "")
+    marker = "  ← BEST" if rank == 1 else ("  ← Ref" if r["name"] == "B1_all5_uniform_both" else "")
     table_rows += (
         f"  {rank:<5} {r['name']:<38} {r['strategy']:<12} {r['n_models']:<3} "
         f"{cls_vals}  {r['macro_f1']:.5f}{marker}\n"
@@ -528,7 +464,7 @@ for rank, r in enumerate(results, 1):
 weight_section = f"\n{SEP}\n  GEWICHTUNGSMATRIZEN (Val-F1 pro Modell × Klasse)\n{SEP}\n"
 header_row = f"  {'Modell':<14}" + "".join(f"{c:>12}" for c in CLASSES) + f"{'Macro-F1':>12}\n"
 
-for run_key in ["para", "both", "none", "3para", "a8final"]:
+for run_key in ["both", "none", "3para", "a8final"]:
     weight_section += f"\n  [{run_key}]\n" + header_row + f"  {'─'*60}\n"
     for model_name in ["gbert", "xlmr", "deberta", "mdeberta", "gelectra"]:
         mk = (model_name, run_key)
@@ -552,7 +488,6 @@ detail_section = (
 
 # Empfehlungsabschnitt
 ref_b1 = next((r for r in results if r["name"] == "B1_all5_uniform_both"), None)
-ref_a1 = next((r for r in results if r["name"] == "A1_all5_uniform_para"), None)
 
 recommend_lines = [
     f"\n{SEP2}",
@@ -564,11 +499,6 @@ if ref_b1:
     delta = best["macro_f1"] - ref_b1["macro_f1"]
     recommend_lines.append(
         f"  vs. Referenz B1 (both):   {ref_b1['name']:<38} Macro-F1: {ref_b1['macro_f1']:.5f}  ({delta:+.5f})"
-    )
-if ref_a1:
-    delta = best["macro_f1"] - ref_a1["macro_f1"]
-    recommend_lines.append(
-        f"  vs. Referenz A1 (para):   {ref_a1['name']:<38} Macro-F1: {ref_a1['macro_f1']:.5f}  ({delta:+.5f})"
     )
 
 # Frage: Ist All-5 wirklich das Beste?
