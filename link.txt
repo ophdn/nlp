@@ -1,42 +1,13 @@
-https://nextcloud.in.tum.de/index.php/s/YFq3RbDW7iPro7B
 
-# C2A
-python germeval2026_transfer.py \
-  --task        c2a \
-  --train_file  ../data/GermEval2026/data/c2a/c2a_train_26.csv \
-  --test_file   ../data/GermEval2026/data/c2a/c2a_test_26.csv \
-  --source_run  model_dataset_gridsearch/all5_aug-paraphrase \
-  --models      gbert mdeberta gelectra \
-  --out_dir     transfer_runs/c2a
-
-# VIO
-python germeval2026_transfer.py \
-  --task        vio \
-  --train_file  ../data/GermEval2026/data/vio/vio_train_26.csv \
-  --test_file   ../data/GermEval2026/data/vio/vio_test_26.csv \
-  --source_run  model_dataset_gridsearch/all5_aug-paraphrase \
-  --models      gbert mdeberta gelectra \
-  --out_dir     transfer_runs/vio
-
-# DEF
-python germeval2026_transfer.py \
-  --task        def \
-  --train_file  ../data/GermEval2026/data/def/def_train.csv \
-  --test_file   ../data/GermEval2026/data/def/def_test.csv \
-  --source_run  model_dataset_gridsearch/all5_aug-paraphrase \
-  --models      gbert mdeberta gelectra \
-  --out_dir     transfer_runs/def
-
-
-  =================================================================
-  Task:         VIO  (6 Klassen: ['call2violence', 'glorification', 'nothing', 'other', 'propensity', 'support'])
-  Modelle:      ['gbert', 'mdeberta', 'gelectra']
-  DBO-Run:      model_dataset_gridsearch/all5_aug-paraphrase
-  Device:       cuda
-  LR Encoder:   5e-06  |  LR Head: 2e-05
-  Freeze:       Encoder für erste 1 Epoch(s)
-  Max Epochs:   5  |  Patience: 30
-  Ausgabe:      /u/halle/ophe/home_at/Desktop/nlp/Sophie/transfer_runs/vio
-=================================================================
-
-python germeval2026_finalize.py --task c2a --train_file ../data/GermEval2026/data/c2a/c2a_train_26.csv --trial_file ../data/GermEval2026/data/c2a/c2a_trial.csv --test_file ../data/GermEval2026/data/c2a/c2a_test_26.csv --from_scratch --models gbert --out_dir final_runs_scratch/c2a --mode select --team DetecTUM --run 2
+  Lade gbert        <- /u/halle/ophe/home_at/Desktop/nlp/Sophie/model_dataset_gridsearch/all5_aug-both/model_gbert/best_model_weights.pt
+/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py:949: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
+  warnings.warn(
+Traceback (most recent call last):
+  File "/u/halle/ophe/home_at/Desktop/nlp/Sophie/germeval2026_submission.py", line 291, in <module>
+    model.load_state_dict({k: v.float() for k, v in state.items()})
+  File "/u/halle/ophe/home_at/Desktop/nlp/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 2638, in load_state_dict
+    raise RuntimeError(
+RuntimeError: Error(s) in loading state_dict for TransformerClassifier:
+        size mismatch for classifier.3.weight: copying a param with shape torch.Size([4, 1024]) from checkpoint, the shape in current model is torch.Size([6, 1024]).
+        size mismatch for classifier.3.bias: copying a param with shape torch.Size([4]) from checkpoint, the shape in current model is torch.Size([6]).
+(venv) ophe@nc-10-4-3:~/Desktop/nlp/Sophie$ 
