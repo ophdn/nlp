@@ -111,6 +111,12 @@ CHECKPOINT_MAP = {
     ("mdeberta", "both"): "all5_aug-both",
     ("gelectra", "both"): "all5_aug-both",
     ("xlmr",     "none"): "all5_aug-none",
+    ("gbert",    "3para"):   "3_aug-paraphrase",
+    ("gelectra", "3para"):   "3_aug-paraphrase",
+    ("mdeberta", "3para"):   "3_aug-paraphrase",
+    ("gbert",    "a8final"): "A8_trio_final_submission",
+    ("gelectra", "a8final"): "A8_trio_final_submission",
+    ("mdeberta", "a8final"): "A8_trio_final_submission",
 }
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -121,6 +127,8 @@ CHECKPOINT_MAP = {
 _P   = "para"
 _B   = "both"
 _N   = "none"
+_3P  = "3para"
+_A8F = "a8final"
 
 _ALL5_P   = [("gbert",_P),("xlmr",_P),("deberta",_P),("mdeberta",_P),("gelectra",_P)]
 _TOP4_P   = [("gbert",_P),("deberta",_P),("mdeberta",_P),("gelectra",_P)]
@@ -129,7 +137,9 @@ _TRIO2_P  = [("mdeberta",_P),("gelectra",_P),("gbert",_P)]       # mdeberta+gele
 _DUO_P    = [("mdeberta",_P),("gelectra",_P)]                     # die zwei Besten
 _ALL5_B   = [("gbert",_B),("xlmr",_B),("deberta",_B),("mdeberta",_B),("gelectra",_B)]
 _TOP4_B   = [("gbert",_B),("deberta",_B),("mdeberta",_B),("gelectra",_B)]
-_ALL5_MIX = [("gbert",_P),("xlmr",_N),("deberta",_P),("mdeberta",_P),("gelectra",_P)]
+_ALL5_MIX  = [("gbert",_P),("xlmr",_N),("deberta",_P),("mdeberta",_P),("gelectra",_P)]
+_TRIO_3P   = [("gbert",_3P),("gelectra",_3P),("mdeberta",_3P)]
+_TRIO_A8F  = [("gbert",_A8F),("gelectra",_A8F),("mdeberta",_A8F)]
 
 ENSEMBLE_CONFIGS = [
     # ── Einzelmodell-Baselines ─────────────────────────────────────────────────
@@ -162,6 +172,16 @@ ENSEMBLE_CONFIGS = [
     ("D4_top4_winner_both",       _TOP4_B,   "winner"),
     ("D5_all5_winner_mixed",      _ALL5_MIX, "winner"),
     ("D6_trio_winner_para",       _TRIO1_P,  "winner"),
+    # ── Gruppe E: Trio aus 3_aug-paraphrase ───────────────────────────────────
+    ("E1_trio_3para_uniform",     _TRIO_3P,  "uniform"),
+    ("E2_trio_3para_perclass",    _TRIO_3P,  "per_class"),
+    ("E3_trio_3para_macroF1",     _TRIO_3P,  "macro_f1"),
+    ("E4_trio_3para_winner",      _TRIO_3P,  "winner"),
+    # ── Gruppe F: Trio aus A8_trio_final_submission ───────────────────────────
+    ("F1_trio_a8final_uniform",   _TRIO_A8F, "uniform"),
+    ("F2_trio_a8final_perclass",  _TRIO_A8F, "per_class"),
+    ("F3_trio_a8final_macroF1",   _TRIO_A8F, "macro_f1"),
+    ("F4_trio_a8final_winner",    _TRIO_A8F, "winner"),
 ]
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -508,7 +528,7 @@ for rank, r in enumerate(results, 1):
 weight_section = f"\n{SEP}\n  GEWICHTUNGSMATRIZEN (Val-F1 pro Modell × Klasse)\n{SEP}\n"
 header_row = f"  {'Modell':<14}" + "".join(f"{c:>12}" for c in CLASSES) + f"{'Macro-F1':>12}\n"
 
-for run_key in ["para", "both", "none"]:
+for run_key in ["para", "both", "none", "3para", "a8final"]:
     weight_section += f"\n  [{run_key}]\n" + header_row + f"  {'─'*60}\n"
     for model_name in ["gbert", "xlmr", "deberta", "mdeberta", "gelectra"]:
         mk = (model_name, run_key)
